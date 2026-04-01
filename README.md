@@ -260,9 +260,10 @@ gradeflow_system/
 │   ├── public/                # Public assets
 │   ├── package.json           # Frontend dependencies
 │   └── ...                    # Other frontend files
-├── docs/                      # Project documentation & reports
-├── docker-compose.yml         # Docker configuration
+├── .gitignore                 # Version control exclusions
+├── docker-compose.yml         # Docker orchestration
 ├── start-system.ps1           # Automated startup script
+├── vercel.json                # Vercel deployment configuration
 └── README.md                  # This file
 ```
 
@@ -277,7 +278,3 @@ gradeflow_system/
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-Developed with ❤️ for educational institutions worldwide.
