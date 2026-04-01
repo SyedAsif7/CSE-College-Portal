@@ -312,7 +312,7 @@ async def persist_student_mark_to_excel(student: dict, subject: dict, exam: dict
     from openpyxl.utils import get_column_letter
     
     # Use existing Excel file - DO NOT create new one
-    file_path = Path(__file__).parent.parent / "Result_Sheet.xlsx"
+    file_path = Path(__file__).parent / "Result_Sheet.xlsx"
     
     # If file doesn't exist, skip Excel export (don't create new file)
     if not file_path.exists():
@@ -1145,7 +1145,7 @@ async def export_marksheet(exam_id: str):
     # Also store to disk at fixed location
     try:
         from pathlib import Path
-        result_path = Path(__file__).parent.parent / "Result_Sheet.xlsx"
+        result_path = Path(__file__).parent / "Result_Sheet.xlsx"
         with open(result_path, "wb") as f:
             f.write(output.getbuffer())
     except Exception:
@@ -1263,7 +1263,7 @@ async def export_subject_results(class_name: Optional[str] = None):
     # Also store to disk at fixed location
     try:
         from pathlib import Path
-        result_path = Path(__file__).parent.parent / "Result_Sheet.xlsx"
+        result_path = Path(__file__).parent / "Result_Sheet.xlsx"
         with open(result_path, "wb") as f:
             f.write(output.getbuffer())
     except Exception:

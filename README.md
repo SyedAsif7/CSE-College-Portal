@@ -84,12 +84,15 @@ The system provides role-based dashboards for administrators, teachers, and stud
 
 ### Administrator
 Full system access including user management, exam creation, and report generation.
+- **Default Login**: `hod@college.edu` / `hod123`
 
 ### Teacher
 Access to evaluate assigned answer sheets, upload documents, and export grades.
+- **Example Login**: `caa@college.edu` / `caa123` (Teacher initials + 123)
 
 ### Student
 Read-only access to personal information, exam schedules, and results.
+- **Example Login**: `cs225201@college.edu` / `CS225201` (Roll number format)
 
 ## Prerequisites
 
@@ -245,15 +248,19 @@ The frontend is configured for Vercel deployment:
 ```
 gradeflow_system/
 ├── backend/
+│   ├── data/                  # Sample data (JSON files)
+│   ├── scripts/               # Administrative & utility scripts
+│   ├── tests/                 # API & system tests
 │   ├── server.py              # Main FastAPI application
 │   ├── requirements.txt       # Python dependencies
 │   ├── .env                   # Environment variables
-│   └── ...                    # Other backend files
+│   └── Result_Sheet.xlsx      # Master result sheet
 ├── frontend/
 │   ├── src/                   # React source code
 │   ├── public/                # Public assets
 │   ├── package.json           # Frontend dependencies
 │   └── ...                    # Other frontend files
+├── docs/                      # Project documentation & reports
 ├── docker-compose.yml         # Docker configuration
 ├── start-system.ps1           # Automated startup script
 └── README.md                  # This file
