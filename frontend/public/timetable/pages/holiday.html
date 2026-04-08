@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Calendar | SSIEMS Academic System</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --accent: #4f46e5;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Background pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 32px 32px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.025em;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        nav ul li a:hover::after, nav ul li a.active::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .calendar-card {
+            background: white;
+            padding: 4rem;
+            border-radius: 40px;
+            border: 1px solid #f1f5f9;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+
+        .header-section p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .official-header {
+            text-align: center;
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            border: 1px solid #f1f5f9;
+        }
+
+        .official-header h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .official-header h3 { font-size: 1rem; color: var(--primary); margin-bottom: 1rem; }
+        .official-header p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.4; }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            background: white;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td {
+            background: #f8fafc;
+            color: var(--text-main);
+        }
+
+        .holiday-section {
+            background: #fff;
+            border-radius: 32px;
+            padding: 3rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .holiday-section h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .holiday-grid {
+            display: grid;
+            grid-template-cols: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .holiday-item {
+            background: #f8fafc;
+            padding: 1.25rem;
+            border-radius: 18px;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .holiday-item:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .holiday-date {
+            font-size: 0.875rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 10px;
+        }
+
+        .holiday-name {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Signature */
+        .signature-block {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px dashed #e2e8f0;
+            text-align: right;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .signature-block strong { color: var(--text-main); }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 4rem 2rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-cols: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo-icon {
+            background: var(--primary);
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        .footer-desc {
+            color: #94a3b8;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid #1e293b;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 640px) {
+            .calendar-card { padding: 2.5rem 1.5rem; }
+            .holiday-section { padding: 1.5rem; }
+            nav ul { display: none; }
+            main { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <nav>
+        <a href="../index.html" class="logo-container">
+            <div class="logo-icon">
+                <i data-lucide="graduation-cap"></i>
+            </div>
+            <span class="logo-text">SSIEMS</span>
+        </a>
+        <ul>
+            <li><a href="resources.html">Resources</a></li>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="timetable.html">Timetable</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html" style="background: var(--text-main); color: white; padding: 0.625rem 1.5rem; border-radius: 9999px;">Login</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="calendar-card">
+            <div class="header-section">
+                <h1>Academic <span style="color: var(--primary);">Calendar</span></h1>
+                <p>Official 2025–2026 Academic Session Schedule</p>
+            </div>
+
+            <div class="official-header">
+                <h2>Dr. Babasaheb Ambedkar Technological University</h2>
+                <h3>Vidyavihar, Lonere - Raigad (Maharashtra)</h3>
+                <p>Odd Semester (AY 2025–2026) | Dr. Amit Shesh (I/c. Registrar)</p>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Activity</th>
+                            <th>Commencement</th>
+                            <th>Concluding</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Commencement of Classes</td>
+                            <td>01st Aug 2025</td>
+                            <td>21st Nov 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mid Semester Examination</td>
+                            <td>29th Sep 2025</td>
+                            <td>04th Oct 2025</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>End of Classes</td>
+                            <td>--</td>
+                            <td>21st Nov 2025</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Practical / Seminar Examination</td>
+                            <td>22nd Nov 2025</td>
+                            <td>27th Nov 2025</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>End Semester Examination</td>
+                            <td>28th Nov 2025</td>
+                            <td>09th Dec 2025</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Staff Vacations</td>
+                            <td>10th Dec 2025</td>
+                            <td>29th Dec 2025</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Result Declaration</td>
+                            <td>--</td>
+                            <td>09th Jan 2026</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Next Semester Classes</td>
+                            <td>09th Jan 2026</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="holiday-section">
+                <h3><i data-lucide="palm-tree"></i> Gazetted Holidays (2025)</h3>
+                <div class="holiday-grid">
+                    <div class="holiday-item">
+                        <span class="holiday-name">Independence Day</span>
+                        <span class="holiday-date">15 Aug</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Parsi New Year</span>
+                        <span class="holiday-date">15 Aug</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Ganesh Chaturthi</span>
+                        <span class="holiday-date">27 Aug</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Eid-e-Milad</span>
+                        <span class="holiday-date">05 Sep</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Gandhi Jayanti</span>
+                        <span class="holiday-date">02 Oct</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Dasara</span>
+                        <span class="holiday-date">02 Oct</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Diwali (Laxmi Pujan)</span>
+                        <span class="holiday-date">21 Oct</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Diwali (Bali Pratipada)</span>
+                        <span class="holiday-date">22 Oct</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Guru Nanak Jayanti</span>
+                        <span class="holiday-date">05 Nov</span>
+                    </div>
+                    <div class="holiday-item">
+                        <span class="holiday-name">Christmas</span>
+                        <span class="holiday-date">25 Dec</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signature-block">
+                <strong>Digitally Signed by</strong><br>
+                Dr. A.P. Shesh (I/c Registrar)<br>
+                DBATU Lonere, Raigad
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">
+                        <i data-lucide="graduation-cap"></i>
+                    </div>
+                    <span class="footer-logo-text">SSIEMS</span>
+                </div>
+                <p class="footer-desc">
+                    Empowering Students & Staff with modern digital tools for academic excellence and administrative efficiency.
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="timetable.html">Timetable</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                    <li><a href="about.html">About System</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="#">info@ssiems.org.in</a></li>
+                    <li><a href="#">Parbhani, MH, India</a></li>
+                    <li><a href="#">Support Portal</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SSIEMS Academic System. MSPM Parbhani.
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consolidated Timetable | SSIEMS Academic System</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --accent: #4f46e5;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Background pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 32px 32px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.025em;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        nav ul li a:hover::after, nav ul li a.active::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            background: white;
+            padding: 2rem 2.5rem;
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-section h1 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .table-wrap {
+            background: white;
+            border-radius: 32px;
+            border: 1px solid var(--border);
+            overflow: auto;
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+            table-layout: fixed;
+        }
+
+        th {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            background: white;
+            transition: background 0.2s ease;
+        }
+
+        .daycol {
+            background: #f8fafc;
+            font-weight: 900;
+            text-align: center;
+            vertical-align: middle;
+            color: var(--primary);
+            width: 100px;
+            font-size: 0.875rem;
+        }
+
+        .classcol {
+            background: #f1f5f9;
+            font-weight: 800;
+            text-align: center;
+            vertical-align: middle;
+            width: 80px;
+            color: var(--text-main);
+        }
+
+        .cell {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .line { font-weight: 800; color: var(--text-main); font-size: 0.8125rem; }
+        .meta { font-size: 10px; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
+
+        tr:hover td:not(.daycol):not(.classcol) {
+            background: #fdfdfd;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 4rem 2rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-cols: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo-icon {
+            background: var(--primary);
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        .footer-desc {
+            color: #94a3b8;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid #1e293b;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        @media print {
+            nav, footer, .bg-pattern, .header-actions { display: none !important; }
+            main { padding: 0; margin: 0; }
+            .header-section { box-shadow: none; border: none; padding: 1rem 0; margin-bottom: 1rem; }
+            .table-wrap { box-shadow: none; border-radius: 0; padding: 0; border: none; overflow: visible; }
+            table { min-width: 100%; table-layout: auto; }
+            body { background: white; padding: 0; }
+        }
+
+        @media (max-width: 768px) {
+            nav ul { display: none; }
+            .header-section { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .header-section h1 { justify-content: center; font-size: 1.5rem; }
+            main { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <nav>
+        <a href="../index.html" class="logo-container">
+            <div class="logo-icon">
+                <i data-lucide="graduation-cap"></i>
+            </div>
+            <span class="logo-text">SSIEMS</span>
+        </a>
+        <ul>
+            <li><a href="resources.html">Resources</a></li>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="timetable.html">Timetable</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html" style="background: var(--text-main); color: white; padding: 0.625rem 1.5rem; border-radius: 9999px;">Login</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="header-section">
+            <h1>
+                <i data-lucide="layout" style="width: 32px; height: 32px; color: var(--primary);"></i>
+                Consolidated Master Timetable <span style="color: var(--text-muted); font-weight: 500; font-size: 1rem;">(2025-26)</span>
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="window.print()">
+                    <i data-lucide="printer" style="width: 18px; height: 18px;"></i> Print View
+                </button>
+                <a href="timetable.html" class="btn btn-outline">
+                    <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Back to Select
+                </a>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Class</th>
+                        <th>10:30–11:30</th>
+                        <th>11:30–12:30</th>
+                        <th>12:30–1:15</th>
+                        <th>1:15–2:15</th>
+                        <th>2:15–3:15</th>
+                        <th>3:15–3:30</th>
+                        <th>3:30–4:30</th>
+                        <th>4:30–5:30</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- MON -->
+                    <tr>
+                        <td class="daycol" rowspan="4">MONDAY</td>
+                        <td class="classcol">FY</td>
+                        <td><div class="cell"><div class="line">EM [KRR]</div><div class="meta">Subject: EM</div></div></td>
+                        <td><div class="cell"><div class="line">EM-II [KBB]</div><div class="meta">Subject: EM-II</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">CHE B2</div><div class="meta">PPS LAB-B3</div></div></td>
+                        <td><div class="cell"><div class="line">CHE B2</div><div class="meta">PPS LAB-B3</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">WS G1 / EM G2</div></div></td>
+                        <td><div class="cell"><div class="line">WS G1 / EM G2</div></div></td>
+                    </tr>
+                    <tr>
+                        <td class="classcol">SY</td>
+                        <td><div class="cell"><div class="line">DM [SBB]</div><div class="meta">Subject: DM</div></div></td>
+                        <td><div class="cell"><div class="line">DS [SMA]</div><div class="meta">Subject: DS</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">CG LAB-S1</div><div class="meta">DS LAB-S2</div></div></td>
+                        <td><div class="cell"><div class="line">CG LAB-S1</div><div class="meta">DS LAB-S2</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">OOP [PKJ]</div><div class="meta">Subject: OOP</div></div></td>
+                        <td><div class="cell"><div class="line">DELD [VKA]</div><div class="meta">Subject: DELD</div></div></td>
+                    </tr>
+                    <tr>
+                        <td class="classcol">TY</td>
+                        <td><div class="cell"><div class="line">DAA [ASM]</div><div class="meta">Subject: DAA</div></div></td>
+                        <td><div class="cell"><div class="line">CN [DSS]</div><div class="meta">Subject: CN</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">DBMS [SSD]</div><div class="meta">Subject: DBMS</div></div></td>
+                        <td><div class="cell"><div class="line">TOC [SSD]</div><div class="meta">Subject: TOC</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">CN LAB-T1</div><div class="meta">DBMS LAB-T2</div></div></td>
+                        <td><div class="cell"><div class="line">CN LAB-T1</div><div class="meta">DBMS LAB-T2</div></div></td>
+                    </tr>
+                    <tr>
+                        <td class="classcol">FINAL</td>
+                        <td><div class="cell"><div class="line">ML [VKA]</div><div class="meta">Subject: ML</div></div></td>
+                        <td><div class="cell"><div class="line">CC [ASM]</div><div class="meta">Subject: CC</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">ML LAB-B1</div><div class="meta">CC LAB-B2</div></div></td>
+                        <td><div class="cell"><div class="line">ML LAB-B1</div><div class="meta">CC LAB-B2</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">ENTREP. [KRR]</div><div class="meta">Subject: ENT</div></div></td>
+                        <td><div class="cell"><div class="line">HONORS</div><div class="meta">Spec. Course</div></div></td>
+                    </tr>
+                    <!-- TUE -->
+                    <tr style="border-top: 3px solid var(--border);">
+                        <td class="daycol" rowspan="4">TUESDAY</td>
+                        <td class="classcol">FY</td>
+                        <td><div class="cell"><div class="line">PPS [DSS]</div></div></td>
+                        <td><div class="cell"><div class="line">BEE [KRR]</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">EM-II [KBB]</div></div></td>
+                        <td><div class="cell"><div class="line">EM [KRR]</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">BEE LAB-B1</div></div></td>
+                        <td><div class="cell"><div class="line">BEE LAB-B1</div></div></td>
+                    </tr>
+                    <tr>
+                        <td class="classcol">SY</td>
+                        <td><div class="cell"><div class="line">DS [SMA]</div></div></td>
+                        <td><div class="cell"><div class="line">OOP [PKJ]</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">DELD [VKA]</div></div></td>
+                        <td><div class="cell"><div class="line">DM [SBB]</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">DS LAB-S1</div></div></td>
+                        <td><div class="cell"><div class="line">DS LAB-S1</div></div></td>
+                    </tr>
+                    <tr>
+                        <td class="classcol">TY</td>
+                        <td><div class="cell"><div class="line">DBMS [SSD]</div></div></td>
+                        <td><div class="cell"><div class="line">DAA [ASM]</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">CN [DSS]</div></div></td>
+                        <td><div class="cell"><div class="line">TOC [SSD]</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">DAA LAB-T1</div></div></td>
+                        <td><div class="cell"><div class="line">DAA LAB-T1</div></div></td>
+                    </tr>
+                    <tr>
+                        <td class="classcol">FINAL</td>
+                        <td><div class="cell"><div class="line">CC [ASM]</div></div></td>
+                        <td><div class="cell"><div class="line">ML [VKA]</div></div></td>
+                        <td style="background: #f1f5f9; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted); letter-spacing: 0.2em;">RECESS</td>
+                        <td><div class="cell"><div class="line">ENTREP. [KRR]</div></div></td>
+                        <td><div class="cell"><div class="line">PROJECT</div></div></td>
+                        <td style="background: #f8fafc; vertical-align: middle; text-align: center; font-weight: 800; color: var(--text-muted);">BREAK</td>
+                        <td><div class="cell"><div class="line">ML LAB-B2</div></div></td>
+                        <td><div class="cell"><div class="line">ML LAB-B2</div></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">
+                        <i data-lucide="graduation-cap"></i>
+                    </div>
+                    <span class="footer-logo-text">SSIEMS</span>
+                </div>
+                <p class="footer-desc">
+                    Empowering Students & Staff with modern digital tools for academic excellence and administrative efficiency.
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="timetable.html">Timetable</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                    <li><a href="about.html">About System</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="#">info@ssiems.org.in</a></li>
+                    <li><a href="#">Parbhani, MH, India</a></li>
+                    <li><a href="#">Support Portal</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SSIEMS Academic System. MSPM Parbhani.
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

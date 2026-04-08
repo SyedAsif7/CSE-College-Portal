@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Resources | SSIEMS Academic System</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --accent: #4f46e5;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Background pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 32px 32px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.025em;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        nav ul li a:hover::after, nav ul li a.active::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 5rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-section h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            font-weight: 500;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Grid */
+        .resources-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .resource-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 32px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            flex: 1 1 200px;
+            max-width: 260px;
+        }
+
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, transparent, rgba(37, 99, 235, 0.03));
+            border-radius: 0 0 0 100%;
+            z-index: 0;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+            background: #f8fafc;
+            color: var(--text-muted);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .resource-card:hover .card-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        .resource-card h3 {
+            font-size: 1.375rem;
+            font-weight: 800;
+            margin-bottom: 0.875rem;
+            color: var(--text-main);
+            position: relative;
+            z-index: 1;
+        }
+
+        .resource-card p {
+            font-size: 0.9375rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-action {
+            width: 100%;
+            background: #f1f5f9;
+            color: var(--text-main);
+            border: none;
+            padding: 1rem;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .resource-card:hover .btn-action {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-action i {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .resource-card:hover .btn-action i {
+            transform: translateX(4px);
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 4rem 2rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-cols: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo-icon {
+            background: var(--primary);
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        .footer-desc {
+            color: #94a3b8;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid #1e293b;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 640px) {
+            .header-section h1 { font-size: 2.5rem; }
+            nav ul { display: none; }
+            main { padding: 2rem 1rem; }
+            .resources-grid { flex-direction: column; align-items: center; }
+            .resource-card { max-width: 100%; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <nav>
+        <a href="../index.html" class="logo-container">
+            <div class="logo-icon">
+                <i data-lucide="graduation-cap"></i>
+            </div>
+            <span class="logo-text">SSIEMS</span>
+        </a>
+        <ul>
+            <li><a href="resources.html" class="active">Resources</a></li>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="timetable.html">Timetable</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="header-section">
+            <h1>Academic <span style="color: var(--primary);">Resources</span></h1>
+            <p>Access all schedules, calendars, and examination materials in one centralized dashboard.</p>
+        </div>
+
+        <div class="resources-grid">
+            <div class="resource-card">
+                <div class="card-icon"><i data-lucide="calendar"></i></div>
+                <h3>Class Timetable</h3>
+                <p>View updated school, class, and lecturer timetables in real time for all years.</p>
+                <button class="btn-action" onclick="window.location.href='timetable.html'">
+                    View Timetable <i data-lucide="external-link"></i>
+                </button>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-icon"><i data-lucide="file-text"></i></div>
+                <h3>Midsem Exam</h3>
+                <p>Access the detailed schedule and guidelines for mid-semester examinations.</p>
+                <button class="btn-action" onclick="window.location.href='midsem.html'">
+                    View Schedule <i data-lucide="external-link"></i>
+                </button>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-icon"><i data-lucide="refresh-cw"></i></div>
+                <h3>Remedial Exam</h3>
+                <p>Check schedules for remedial, backlog, and makeup examination sessions.</p>
+                <button class="btn-action" onclick="window.location.href='remidial.html'">
+                    View Schedule <i data-lucide="external-link"></i>
+                </button>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-icon"><i data-lucide="edit-3"></i></div>
+                <h3>Class Test</h3>
+                <p>Stay updated with the latest schedule for internal assessments and class tests.</p>
+                <button class="btn-action" onclick="window.location.href='classtest.html'">
+                    View Schedule <i data-lucide="external-link"></i>
+                </button>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-icon"><i data-lucide="layout"></i></div>
+                <h3>Master View</h3>
+                <p>Consolidated integrated timetable for all departments and academic years.</p>
+                <button class="btn-action" onclick="window.location.href='combined.html'">
+                    View Master <i data-lucide="external-link"></i>
+                </button>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-icon"><i data-lucide="calendar-days"></i></div>
+                <h3>Academic Calendar</h3>
+                <p>Official 2025–2026 calendar including holidays, events, and key dates.</p>
+                <button class="btn-action" onclick="window.location.href='holiday.html'">
+                    View Calendar <i data-lucide="external-link"></i>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">
+                        <i data-lucide="graduation-cap"></i>
+                    </div>
+                    <span class="footer-logo-text">SSIEMS</span>
+                </div>
+                <p class="footer-desc">
+                    Empowering Students & Staff with modern digital tools for academic excellence and administrative efficiency.
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="timetable.html">Timetable</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="#">info@ssiems.org.in</a></li>
+                    <li><a href="#">Parbhani, MH, India</a></li>
+                    <li><a href="#">Support Portal</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 SSIEMS Academic System. MSPM Parbhani.
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
+

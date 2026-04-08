@@ -98,6 +98,42 @@ input:focus, textarea:focus, select:focus {
 
 /* Badge styles */
 .badge {
+  @apply px-2 py-0.5 rounded-full text-xs font-semibold;
+}
+
+/* Custom Float Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Bounce Subtle */
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 3s ease-in-out infinite;
+}
+
+/* Custom Scroll Progress Bar (optional but nice) */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 4px;
+  background: linear-gradient(to right, #2563eb, #4f46e5);
+  z-index: 100;
+}
+
+.badge {
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.75rem;

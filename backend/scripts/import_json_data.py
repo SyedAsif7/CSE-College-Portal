@@ -50,7 +50,7 @@ async def import_students_from_json(file_path: Path, class_name: str, semester: 
             continue
         
         # Generate email from name and roll number
-        email = f"{roll_number.lower().replace(' ', '')}@college.edu"
+        email = f"{roll_number.lower().replace(' ', '')}@ssiems.org.in"
         
         # Check if student already exists
         existing = await db.students.find_one({
@@ -107,7 +107,7 @@ async def create_hod_account():
     print(f"\n👔 Creating HOD/Admin account...")
     
     hod_name = "Vinod Pawar"
-    hod_email = "hod@college.edu"
+    hod_email = "hod@ssiems.org.in"
     hod_password = "hod123"
     
     existing = await db.users.find_one({"email": hod_email})
@@ -230,14 +230,14 @@ async def import_teachers_and_subjects():
                 
                 # Generate email from initials or name
                 if teacher_initials:
-                    teacher_email = f"{teacher_initials.lower()}@college.edu"
+                    teacher_email = f"{teacher_initials.lower()}@ssiems.org.in"
                 else:
                     # Use first name and last name for email
                     name_parts = teacher_name.split()
                     if len(name_parts) >= 2:
-                        teacher_email = f"{name_parts[0].lower()}.{name_parts[-1].lower()}@college.edu"
+                        teacher_email = f"{name_parts[0].lower()}.{name_parts[-1].lower()}@ssiems.org.in"
                     else:
-                        teacher_email = f"{teacher_name.lower().replace(' ', '.')}@college.edu"
+                        teacher_email = f"{teacher_name.lower().replace(' ', '.')}@ssiems.org.in"
                 
                 # Default password: initials or firstname.lastname
                 if teacher_initials:

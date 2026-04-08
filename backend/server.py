@@ -60,7 +60,6 @@ def init_db():
         )
         
         db = client[db_name]
-        logger.info("✅ MongoDB connection initialized successfully")
         
         # Initialize GridFS bucket
         fs_bucket = AsyncIOMotorGridFSBucket(db, bucket_name="answer_sheets")
@@ -158,6 +157,17 @@ async def get_database():
             status_code=503, 
             detail="Database not connected. Please configure MONGO_URL and DB_NAME environment variables in Vercel."
         )
+    
+    # Verify connection with ping
+    try:
+        await database.command("ping")
+    except Exception as e:
+        logger.error(f"MongoDB ping failed: {e}")
+        raise HTTPException(
+            status_code=503, 
+            detail=f"Database connection error: {str(e)}. Please check your credentials and IP whitelisting."
+        )
+        
     return database
 
 def require_role(*roles: str):

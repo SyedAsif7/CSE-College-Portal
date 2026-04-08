@@ -21,8 +21,8 @@ db = client[os.environ['DB_NAME']]
 
 async def create_admin_user():
     """Create a test admin user"""
-    email = "admin@example.com"
-    password = "admin123"  # Change this to a secure password
+    email = "hod@ssiems.org.in"
+    password = "hod123"  # Change this to a secure password
     
     # Check if user already exists
     existing = await db.users.find_one({"email": email})
@@ -38,7 +38,7 @@ async def create_admin_user():
         "email": email,
         "password_hash": password_hash,
         "role": "admin",
-        "name": "Admin User"
+        "name": "Vinod Pawar"
     }
     
     # Insert user
