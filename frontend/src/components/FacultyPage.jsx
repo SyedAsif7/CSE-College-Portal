@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import CollegeHeader from './CollegeHeader';
 import { getAssetPath } from "@/lib/utils";
+import { Menu, X, BookOpen, Users, Mail, GraduationCap } from 'lucide-react';
 
 const facultyData = [
   {
@@ -106,44 +107,109 @@ const facultyData = [
 ];
 
 const FacultyPage = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="bg-slate-50 min-h-screen flex flex-col font-sans">
       <CollegeHeader />
       {/* Header */}
       <header className="bg-white border-b border-slate-200 py-4 px-6 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="max-w-7xl mx-auto flex justify-between items-center h-12">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2 group">
               <div className="bg-blue-600 text-white p-2 rounded-lg group-hover:bg-blue-700 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18.477 16.5 18.477s-3.332.477-4.5 1.253" />
-                </svg>
+                <BookOpen className="h-6 w-6" />
               </div>
-              <span className="text-xl font-bold text-slate-900 tracking-tight">SSIEMS Academic Portal</span>
+              <span className="text-base md:text-xl font-bold text-slate-900 tracking-tight">SSIEMS Portal</span>
             </Link>
           </div>
+          
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+
+          {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
             <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
+            <Link to="/gallery" className="hover:text-blue-600 transition-colors">Gallery</Link>
             <Link to="/faculty" className="text-blue-600 font-bold underline transition-colors">Faculty</Link>
             <a href="mailto:info@ssiems.org.in" className="hover:text-blue-600 transition-colors">Support</a>
           </nav>
         </div>
+
+        {/* Mobile Navigation Overlay */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 shadow-xl animate-in slide-in-from-top duration-300">
+            <div className="flex flex-col p-6 gap-4">
+              <Link 
+                to="/" 
+                className="flex items-center gap-3 text-lg font-bold text-slate-700 hover:text-blue-600 p-3 hover:bg-slate-50 rounded-xl transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <BookOpen className="h-5 w-5 text-blue-500" />
+                Home
+              </Link>
+              <Link 
+                to="/gallery" 
+                className="flex items-center gap-3 text-lg font-bold text-slate-700 hover:text-blue-600 p-3 hover:bg-slate-50 rounded-xl transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Users className="h-5 w-5 text-blue-500" />
+                Gallery
+              </Link>
+              <Link 
+                to="/faculty" 
+                className="flex items-center gap-3 text-lg font-bold text-blue-600 p-3 bg-blue-50 rounded-xl transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <GraduationCap className="h-5 w-5 text-blue-600" />
+                Faculty
+              </Link>
+              <a 
+                href="mailto:info@ssiems.org.in" 
+                className="flex items-center gap-3 text-lg font-bold text-slate-700 hover:text-blue-600 p-3 hover:bg-slate-50 rounded-xl transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Mail className="h-5 w-5 text-blue-500" />
+                Support
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 to-blue-700 py-16 px-6 text-center text-white">
+      <section className="bg-gradient-to-br from-blue-900 to-blue-700 py-12 md:py-16 px-4 md:px-6 text-center text-white">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-4 uppercase tracking-wider">Computer Science and Engineering</h1>
-          <h2 className="text-xl md:text-2xl font-semibold text-blue-100 opacity-90">Our Distinguished Faculty</h2>
-          <div className="mt-6 h-1 w-24 bg-blue-400 mx-auto rounded-full"></div>
+          <h1 className="text-2xl md:text-4xl font-extrabold mb-3 md:mb-4 uppercase tracking-wider leading-tight">Computer Science and Engineering</h1>
+          <h2 className="text-lg md:text-2xl font-semibold text-blue-100 opacity-90">Our Distinguished Faculty</h2>
+          <div className="mt-4 md:mt-6 h-1 w-16 md:w-24 bg-blue-400 mx-auto rounded-full"></div>
         </div>
       </section>
 
-      {/* Faculty Grid */}
-      <main className="max-w-7xl mx-auto py-12 px-6 flex-grow">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 flex-1">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
+          <div className="space-y-1">
+            <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">Departmental Faculty</h2>
+            <p className="text-slate-500 font-medium text-sm md:text-base">Expert guidance for academic and professional excellence.</p>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm self-stretch md:self-auto justify-center">
+            <Users className="h-5 w-5 text-blue-600" />
+            <span className="text-sm font-bold text-slate-700">{facultyData.length} Staff Members</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {facultyData.map((faculty, index) => (
-            <div key={index} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+            <div 
+              key={index} 
+              className="group bg-white rounded-2xl md:rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-2xl hover:border-blue-400/50 transition-all duration-500 flex flex-col overflow-hidden relative"
+            >
               <div className="aspect-[4/3] relative overflow-hidden bg-slate-100">
                 <img 
                   src={faculty.image} 

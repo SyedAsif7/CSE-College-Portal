@@ -73,21 +73,21 @@ const PhotoGallery = () => {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3 md:gap-6">
             <Link 
               to="/" 
-              className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600"
+              className="p-1.5 md:p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600"
             >
-              <ArrowLeft className="h-6 w-6" />
+              <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
             </Link>
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200">
-                <Camera className="h-6 w-6" />
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="bg-blue-600 p-2 md:p-2.5 rounded-lg md:rounded-xl text-white shadow-lg shadow-blue-200">
+                <Camera className="h-5 w-5 md:h-6 md:w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Photo Gallery</h1>
-                <p className="text-sm text-slate-500 font-medium">Capturing Moments at SSIEMS CSE</p>
+                <h1 className="text-lg md:text-2xl font-black text-slate-900 tracking-tight leading-tight">Photo Gallery</h1>
+                <p className="hidden xs:block text-[10px] md:text-sm text-slate-500 font-medium">Capturing Moments at SSIEMS CSE</p>
               </div>
             </div>
           </div>
@@ -100,12 +100,12 @@ const PhotoGallery = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {images.map((image, index) => (
             <div 
               key={index}
-              className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer"
+              className="group relative bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer"
               onClick={() => openLightbox(index)}
             >
               <div className="aspect-[4/3] overflow-hidden">
@@ -117,12 +117,12 @@ const PhotoGallery = () => {
               </div>
               
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                <p className="text-white font-bold text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                <p className="text-white font-bold text-base md:text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                   {image.title}
                 </p>
-                <div className="mt-2 flex items-center gap-2 text-blue-400 font-semibold text-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
-                  <Maximize2 className="h-4 w-4" />
+                <div className="mt-1 md:mt-2 flex items-center gap-2 text-blue-400 font-semibold text-xs md:text-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                  <Maximize2 className="h-3 md:h-4 w-3 md:w-4" />
                   View Full Size
                 </div>
               </div>
@@ -136,34 +136,34 @@ const PhotoGallery = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300">
           <button 
             onClick={closeLightbox}
-            className="absolute top-6 right-6 p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
+            className="absolute top-4 right-4 md:top-6 md:right-6 p-2 md:p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
           >
-            <X className="h-8 w-8" />
+            <X className="h-6 w-6 md:h-8 md:w-8" />
           </button>
           
           <button 
             onClick={prevImage}
-            className="absolute left-6 p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
+            className="absolute left-2 md:left-6 p-2 md:p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
           >
-            <ChevronLeft className="h-10 w-10" />
+            <ChevronLeft className="h-8 w-8 md:h-10 md:w-10" />
           </button>
           
           <button 
             onClick={nextImage}
-            className="absolute right-6 p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
+            className="absolute right-2 md:right-6 p-2 md:p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
           >
-            <ChevronRight className="h-10 w-10" />
+            <ChevronRight className="h-8 w-8 md:h-10 md:w-10" />
           </button>
 
-          <div className="relative max-w-5xl max-h-[85vh] px-4 animate-in zoom-in-95 duration-300">
+          <div className="relative max-w-full md:max-w-5xl max-h-[75vh] md:max-h-[85vh] px-2 md:px-4 animate-in zoom-in-95 duration-300">
             <img 
               src={getAssetPath(selectedImage.src)} 
               alt={selectedImage.title}
               className="w-full h-full object-contain rounded-lg shadow-2xl"
             />
-            <div className="absolute -bottom-16 left-0 right-0 text-center">
-              <h3 className="text-2xl font-bold text-white mb-1">{selectedImage.title}</h3>
-              <p className="text-white/60 font-medium">
+            <div className="absolute -bottom-12 md:-bottom-16 left-0 right-0 text-center px-4">
+              <h3 className="text-lg md:text-2xl font-bold text-white mb-1 truncate">{selectedImage.title}</h3>
+              <p className="text-white/60 text-sm md:text-base font-medium">
                 {currentIndex + 1} of {images.length}
               </p>
             </div>
