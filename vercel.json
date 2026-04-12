@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/server.py",
-      "use": "@vercel/python"
-    },
-    {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -13,14 +9,14 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "backend/server.py"
+      "source": "/api/(.*)",
+      "destination": "https://ssiems-cse-academic-portal.onrender.com/api/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "frontend/$1"
+      "source": "/(.*)",
+      "destination": "frontend/$1"
     }
   ]
 }

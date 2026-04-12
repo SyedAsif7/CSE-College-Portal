@@ -25,7 +25,8 @@ import {
   Star,
   Zap,
   Coffee,
-  Heart
+  Heart,
+  Camera
 } from 'lucide-react';
 import { getAssetPath } from "@/lib/utils";
 import { departmentData } from '../data/departmentData';
@@ -153,6 +154,12 @@ const LandingPage = () => {
             >
               Contact
             </button>
+            <Link 
+              to="/gallery" 
+              className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+            >
+              Gallery
+            </Link>
             <button 
               onClick={handleStart}
               className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
@@ -328,6 +335,19 @@ const LandingPage = () => {
                             </li>
                           ))}
                         </ul>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border border-blue-100 shadow-xl rounded-[2rem] overflow-hidden bg-gradient-to-br from-white to-blue-50/50 group cursor-pointer" onClick={() => navigate('/gallery')}>
+                      <CardContent className="p-8 text-center space-y-4">
+                        <div className="mx-auto w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
+                          <Camera className="h-8 w-8" />
+                        </div>
+                        <h4 className="text-xl font-black text-slate-900 tracking-tight">Campus Life Gallery</h4>
+                        <p className="text-slate-500 text-sm font-medium">Explore our state-of-the-art infrastructure and vibrant student activities.</p>
+                        <div className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm">
+                          View All Photos <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </CardContent>
                     </Card>
                   </div>

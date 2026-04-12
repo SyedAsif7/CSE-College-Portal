@@ -3,6 +3,7 @@ import '@/App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import FacultyPage from './components/FacultyPage';
+import PhotoGallery from './components/PhotoGallery';
 import Login from './components/Login';
 import AdminDashboard from './components/AdminDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
@@ -51,6 +52,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/faculty" element={<FacultyPage />} />
+          <Route path="/gallery" element={<PhotoGallery />} />
           <Route
             path="/login"
             element={

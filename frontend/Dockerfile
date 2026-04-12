@@ -2,11 +2,12 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-COPY package.json .
-COPY . .
-
-# Install dependencies
+# Install dependencies first for better caching
+COPY package.json yarn.lock ./
 RUN yarn install --non-interactive
+
+# Copy the rest of the source code
+COPY . .
 
 # Ensure PDF.js worker is available
 RUN cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs || true
