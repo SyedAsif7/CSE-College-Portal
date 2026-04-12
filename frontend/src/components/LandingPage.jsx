@@ -160,6 +160,12 @@ const LandingPage = () => {
             >
               Gallery
             </Link>
+            <Link 
+              to="/faculty" 
+              className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+            >
+              Faculty
+            </Link>
             <button 
               onClick={handleStart}
               className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
