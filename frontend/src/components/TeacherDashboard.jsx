@@ -9,9 +9,11 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { toast } from 'sonner';
-import { LogOut, FileText, GraduationCap, CheckCircle, Clock, Eye, Search, Filter, Download, Save, Upload, CheckSquare, Trash2 } from 'lucide-react';
+import { LogOut, FileText, GraduationCap, CheckCircle, Clock, Eye, Search, Filter, Download, Save, Upload, CheckSquare, Trash2, BookOpen, Calendar } from 'lucide-react';
 import PdfViewer from './PdfViewer';
 import SimplifiedEvaluationInterface from './SimplifiedEvaluationInterface';
+import AssignmentReview from './teacher/AssignmentReview';
+import TimetableView from './teacher/TimetableView';
 
 const TeacherDashboard = ({ user, onLogout }) => {
   const EXAM_TYPES = ['CA-1', 'CA-2', 'Mid Semester'];
@@ -57,15 +59,22 @@ const TeacherDashboard = ({ user, onLogout }) => {
     try {
       // First, get teacher data to find teacher ID
       const teacherEmail = user.email;
+      console.log('Fetching teacher data for email:', teacherEmail);
+      
       const teacherData = await api.get('/teachers');
+      console.log('Teacher API response:', teacherData.data);
+      
       const currentTeacher = teacherData.data.find(t => t.email === teacherEmail);
 
       if (!currentTeacher) {
-        toast.error('Teacher profile not found');
+        console.error('Teacher not found. Available teachers:', teacherData.data.map(t => t.email));
+        toast.error(`Teacher profile not found for ${teacherEmail}. Please contact admin.`);
         setLoading(false);
         return;
       }
 
+      console.log('Found teacher:', currentTeacher.name, 'ID:', currentTeacher.id);
+      
       // Fetch only data needed for this teacher - use teacher_id filter on server
       const [sheetsRes, studentsRes, examsRes, subjectsRes] = await Promise.all([
         api.get(`/answer-sheets?teacher_id=${currentTeacher.id}`),
@@ -79,10 +88,24 @@ const TeacherDashboard = ({ user, onLogout }) => {
       setExams(examsRes.data || []);
       setSubjects(subjectsRes.data || []);
       setTeacherSubjectIds(Array.isArray(currentTeacher.subject_ids) ? currentTeacher.subject_ids : []);
+      
+      console.log('Data loaded successfully:');
+      console.log('  - Answer sheets:', sheetsRes.data.length);
+      console.log('  - Students:', studentsRes.data.length);
+      console.log('  - Exams:', examsRes.data?.length || 0);
+      console.log('  - Subjects:', subjectsRes.data?.length || 0);
+      
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error('Failed to fetch data');
-    } finally {
+      console.error('Error details:', error.message, error.code);
+      
+      // Better error message for network issues
+      if (error.code === 'NETWORK_ERROR' || !error.status) {
+        toast.error('Unable to connect to server. Please ensure the backend is running on port 8000.');
+      } else {
+        toast.error('Failed to load teacher data. Please try refreshing the page.');
+      }
       setLoading(false);
     }
   };
@@ -673,7 +696,7 @@ const TeacherDashboard = ({ user, onLogout }) => {
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Paper Checking Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Teacher Dashboard</h1>
                 <p className="text-sm text-gray-500">Welcome, {user.name}</p>
               </div>
             </div>
@@ -883,6 +906,24 @@ const TeacherDashboard = ({ user, onLogout }) => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main Tabs */}
+        <Tabs defaultValue="exams" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="exams">
+              <GraduationCap className="w-4 h-4 mr-2" />
+              Exam Answer Sheets
+            </TabsTrigger>
+            <TabsTrigger value="assignments">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Assignments
+            </TabsTrigger>
+            <TabsTrigger value="timetable">
+              <Calendar className="w-4 h-4 mr-2" />
+              Timetable
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="exams">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Card className="border-0 shadow-md bg-white">
@@ -1003,6 +1044,16 @@ const TeacherDashboard = ({ user, onLogout }) => {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="assignments">
+            <AssignmentReview user={user} />
+          </TabsContent>
+
+          <TabsContent value="timetable">
+            <TimetableView />
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Evaluation Interface */}

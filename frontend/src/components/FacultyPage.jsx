@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CollegeHeader from './CollegeHeader';
+import { getAssetPath } from "@/lib/utils";
 
 const facultyData = [
   {
     name: "Prof. Pawar V.K.",
-    image: "/faculty/Pawar V.K..webp",
+    image: getAssetPath("faculty/Pawar V.K..webp"),
     designation: "HOD & Assistant Professor",
     qualification: "BE(CSE), ME(CSE)",
     experience: "Teaching: 11 Years & Industrial : 2 Years",
@@ -14,7 +15,7 @@ const facultyData = [
   },
   {
     name: "Prof. Magar A. R.",
-    image: "/faculty/Magar A. R..webp",
+    image: getAssetPath("faculty/Magar A. R..webp"),
     designation: "Assistant Professor",
     qualification: "BE(CSE), ME(CSE)",
     experience: "Teaching: 14 Years",
@@ -23,7 +24,7 @@ const facultyData = [
   },
   {
     name: "Prof. Devkar R. S.",
-    image: "/faculty/Devkar R. S..webp",
+    image: getAssetPath("faculty/Devkar R. S..webp"),
     designation: "Assistant Professor",
     qualification: "B.Tech(IT) ,M.Tech (CSE)",
     experience: "Teaching: 12 Years",
@@ -32,7 +33,7 @@ const facultyData = [
   },
   {
     name: "Prof. Shelke S. B.",
-    image: "/faculty/Shelke S. B..webp",
+    image: getAssetPath("faculty/Shelke S. B..webp"),
     designation: "Assistant Professor",
     qualification: "BE (CSE), M.Tech (CSE)",
     experience: "Teaching: 3.5 Years",
@@ -41,7 +42,7 @@ const facultyData = [
   },
   {
     name: "Prof. Bais P. G.",
-    image: "/faculty/Bais P. G..webp",
+    image: getAssetPath("faculty/Bais P. G..webp"),
     designation: "Assistant Professor",
     qualification: "BE(CSE), ME (CSE)",
     experience: "Teaching: 4 Years",
@@ -50,7 +51,7 @@ const facultyData = [
   },
   {
     name: "Prof. Panchalwar D. A",
-    image: "/faculty/Panchalwar D. A.webp",
+    image: getAssetPath("faculty/Panchalwar D. A.webp"),
     designation: "Assistant Professor",
     qualification: "BE (CSE), M.Tech (CSE) Persuing",
     experience: "Teaching: 4.4 Years",
@@ -59,7 +60,7 @@ const facultyData = [
   },
   {
     name: "Prof. Jadhav S.M.",
-    image: "/faculty/Jadhav S.M..webp",
+    image: getAssetPath("faculty/Jadhav S.M..webp"),
     designation: "Assistant Professor",
     qualification: "BCS, MCA",
     experience: "Industrial: 3.6 Years & Teaching : 1.4 Years",
@@ -68,7 +69,7 @@ const facultyData = [
   },
   {
     name: "Prof. Jadhav P.K.",
-    image: "/faculty/Jadhav P.K..webp",
+    image: getAssetPath("faculty/Jadhav P.K..webp"),
     designation: "Assistant Professor",
     qualification: "B.Tech (CSE) , M.Tech (CSE) Pursuing",
     experience: "Teaching : 1 Years",
@@ -77,7 +78,7 @@ const facultyData = [
   },
   {
     name: "Prof. Late A.G.",
-    image: "/faculty/Late A.G..webp",
+    image: getAssetPath("faculty/Late A.G..webp"),
     designation: "Assistant Professor",
     qualification: "BE (CSE), M.Tech (CSE) Pursuing",
     experience: "Teaching : 6 Months",
@@ -86,7 +87,7 @@ const facultyData = [
   },
   {
     name: "Prof. Shriramwar S. D.",
-    image: "/faculty/Shriramwar S. D..webp",
+    image: getAssetPath("faculty/Shriramwar S. D..webp"),
     designation: "Assistant Professor",
     qualification: "BE (E&TC) , MTech (VLSI Design)",
     experience: "Teaching : 6 Months & Industrial: 2 Years",
@@ -95,7 +96,7 @@ const facultyData = [
   },
   {
     name: "Mr. Mule D. S.",
-    image: "/faculty/Mule D. S..webp",
+    image: getAssetPath("faculty/Mule D. S..webp"),
     designation: "Network Admin",
     qualification: "N/A",
     experience: "6 Years",
@@ -234,7 +235,7 @@ const FacultyPage = () => {
             <ul className="space-y-3 text-slate-400">
               <li><Link to="/" className="hover:text-white transition-colors">Home Portal</Link></li>
               <li><Link to="/faculty" className="hover:text-white transition-colors">Faculty Directory</Link></li>
-              <li><Link to="/gradeflow" className="hover:text-white transition-colors">Examination System</Link></li>
+              <li><Link to="/login" className="hover:text-white transition-colors">Examination System</Link></li>
               <li><a href="/timetable/index.html" className="hover:text-white transition-colors">Academic Timetable</a></li>
             </ul>
           </div>

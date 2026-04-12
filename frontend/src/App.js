@@ -52,7 +52,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/faculty" element={<FacultyPage />} />
           <Route
-            path="/gradeflow"
+            path="/login"
             element={
               !user ? (
                 <Login onLogin={handleLogin} />

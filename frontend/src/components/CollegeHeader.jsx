@@ -1,8 +1,15 @@
 import React from 'react';
-import { CheckCircle2, Award, ShieldCheck, University } from "lucide-react"; 
+import { Link } from 'react-router-dom';
+import { CheckCircle2, Award, ShieldCheck, University, Home, Users, BookOpen } from "lucide-react"; 
 import { getAssetPath } from "@/lib/utils"; 
 
 const CollegeHeader = () => { 
+  const navigation = [ 
+    { label: "Home", href: "/", icon: <Home className="h-3.5 w-3.5" /> }, 
+    { label: "Department", href: "/#department", icon: <BookOpen className="h-3.5 w-3.5" /> }, 
+    { label: "Faculty", href: "/faculty", icon: <Users className="h-3.5 w-3.5" /> }, 
+  ]; 
+
   const infoItems = [ 
     { 
       label: "Approved by AICTE New Delhi & DTE Maharashtra", 
@@ -24,20 +31,47 @@ const CollegeHeader = () => {
 
   return ( 
     <header className="w-full relative z-40"> 
+      {/* Top Navigation Bar */}
+      <div className="bg-slate-900 text-slate-300 py-1.5 px-6">
+        <div className="max-w-7xl mx-auto flex justify-end gap-6">
+          {navigation.map((item) => (
+            item.href.startsWith('/#') ? (
+              <a 
+                key={item.label} 
+                href={item.href} 
+                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider hover:text-white transition-colors"
+              >
+                {item.icon}
+                {item.label}
+              </a>
+            ) : (
+              <Link 
+                key={item.label} 
+                to={item.href} 
+                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider hover:text-white transition-colors"
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            )
+          ))}
+        </div>
+      </div>
+
       {/* Main header - Enhanced with light theme matching LandingPage */} 
       <div className="relative backdrop-blur-2xl bg-white/95 border-b border-slate-200 shadow-sm shadow-blue-900/5"> 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8"> 
           <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 py-2 md:py-4"> 
             {/* Left: College logo with enhanced presentation */} 
             <div className="flex-shrink-0 group"> 
-              <div className="relative flex items-center justify-center"> 
+              <Link to="/" className="relative flex items-center justify-center"> 
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50 group-hover:opacity-75"></div> 
                 <img 
                   src={getAssetPath("images/ssiems-logo.png")} 
                   alt="Shri Shivaji Institute of Engineering and Management Studies Logo" 
                   className="relative h-10 sm:h-12 md:h-14 lg:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105" 
                 /> 
-              </div> 
+              </Link> 
             </div> 
   
             {/* Center: Trust name + college name with modern typography */} 

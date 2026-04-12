@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- XLSX Library for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<body>
+    <div class="container">
+        <h2>Teacher Login</h2>
+        <input id="temail" placeholder="Enter Email">
+        <input id="tpass" type="password" placeholder="Password">
+        <button onclick="teacherLogin()">Login</button>
+           <p onclick="forgotPassword()" 
+           style="cursor:pointer; color:rgb(0, 0, 0); margin-top:10px;">
+           Forgot Password?
+        </p>
+    </div>
+
+    <div class="container" id="reviewBox" style="display:none;">
+        <h2>Review Submissions</h2>
+    <select id="filterSelect" onchange="filterClass()">
+         <option value="FY">FY</option>
+         <option value="SY">SY</option>
+         <option value="TY">TY</option>
+        <option value="BE">BE</option>
+
+    </select>
+        <select id="subject"></select>
+        <div class="table-box">
+            <table id="submissionTable">
+                <tr>
+                    <th>PRN</th>
+                    <th>Subject</th>
+                    <th>File</th>
+                    <th>Grade</th>
+                    <th>Remark</th>
+                </tr>
+            </table>
+        </div>
+
+        <button onclick="downloadExcel()">Download Excel</button>
+         <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Only one script is needed -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

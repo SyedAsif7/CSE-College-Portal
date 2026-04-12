@@ -4,12 +4,13 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { toast } from 'sonner';
-import { LogOut, Users, BookOpen, FileText, GraduationCap, UserCheck, BarChart3 } from 'lucide-react';
+import { LogOut, Users, BookOpen, FileText, GraduationCap, UserCheck, BarChart3, Upload } from 'lucide-react';
 import StudentsManagement from './admin/StudentsManagement';
 import TeachersManagement from './admin/TeachersManagement';
 import SubjectsManagement from './admin/SubjectsManagement';
 import ExamsManagement from './admin/ExamsManagement';
 import AnswerSheetsManagement from './admin/AnswerSheetsManagement';
+import AssignmentsManagement from './admin/AssignmentsManagement';
 
 const AdminDashboard = ({ user, onLogout }) => {
   const [stats, setStats] = useState(null);
@@ -102,11 +103,12 @@ const AdminDashboard = ({ user, onLogout }) => {
         <Card className="border-0 shadow-lg">
           <Tabs defaultValue="students" className="w-full">
             <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white">
-              <TabsList className="grid w-full grid-cols-5 bg-gray-100">
+              <TabsList className="grid w-full grid-cols-6 bg-gray-100">
                 <TabsTrigger value="students" data-testid="students-tab">Students</TabsTrigger>
                 <TabsTrigger value="teachers" data-testid="teachers-tab">Teachers</TabsTrigger>
                 <TabsTrigger value="subjects" data-testid="subjects-tab">Subjects</TabsTrigger>
                 <TabsTrigger value="exams" data-testid="exams-tab">Exams</TabsTrigger>
+                <TabsTrigger value="assignments" data-testid="assignments-tab">Assignments</TabsTrigger>
                 <TabsTrigger value="answer-sheets" data-testid="answer-sheets-tab">Answer Sheets</TabsTrigger>
               </TabsList>
             </CardHeader>
@@ -122,6 +124,9 @@ const AdminDashboard = ({ user, onLogout }) => {
               </TabsContent>
               <TabsContent value="exams" className="mt-0">
                 <ExamsManagement />
+              </TabsContent>
+              <TabsContent value="assignments" className="mt-0">
+                <AssignmentsManagement />
               </TabsContent>
               <TabsContent value="answer-sheets" className="mt-0">
                 <AnswerSheetsManagement onUpdate={fetchStats} />

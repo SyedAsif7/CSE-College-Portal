@@ -6,5 +6,8 @@ export function cn(...inputs) {
 }
 
 export function getAssetPath(path) {
-  return `/${path}`;
+  const publicUrl = process.env.PUBLIC_URL || '';
+  // Ensure the path starts with a / if it doesn't already, but only if publicUrl is present
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${publicUrl}${normalizedPath}`;
 }

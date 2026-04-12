@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ================= STUDENT LOGIN ================= -->
+    <div class="container" id="loginBox">
+        <h2>Student Login</h2>
+        <input type="text" id="loginPrn" placeholder="Enter PRN">
+        <input type="password" id="spass" placeholder="Enter Password">
+  
+        <button onclick="studentLogin()">Login</button>
+
+        <p onclick="forgotPassword()" 
+           style="cursor:pointer; color:rgb(0, 0, 0); margin-top:10px;">
+           Forgot Password?
+        </p>
+    </div>
+
+    <!-- ================= UPLOAD BOX ================= -->
+    <div class="container" id="uploadBox" style="display:none;">
+        <!-- Hidden PRN for upload (auto-filled after login) -->
+        <div id="studentTableBox" style="display:none;">
+            <h3>Your Submissions</h3>
+            <table id="studentSubmissionTable" border="1"></table>
+        </div>
+
+        <h2>Upload Assignment</h2>
+        
+        <select id="class">
+            <option disabled selected>Select Class</option>
+            <option>FY</option>
+            <option>SY</option>
+            <option>TY</option>
+            <option>BE</option>
+        </select>
+
+        <select id="subject"></select>
+
+        <input type="file" id="filePDF" accept="application/pdf">
+
+        <button onclick="uploadAssignment()">Submit</button>
+        <button onclick="logout()">Logout</button>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

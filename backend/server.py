@@ -16,6 +16,8 @@ import jwt
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from bson import ObjectId
 from gridfs import NoFile
+import io
+from openpyxl import Workbook
 
 ROOT_DIR = Path(__file__).parent
 
@@ -1297,6 +1299,201 @@ if cors_origins == '*':
     allow_origins = ['*']
 else:
     allow_origins = [origin.strip() for origin in cors_origins.split(',')]
+
+# ==================== ASSIGNMENT MANAGEMENT ENDPOINTS ====================
+
+# Assignment Models
+class AssignmentSubmission(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    prn: str
+    class_name: str
+    subject: str
+    file_name: str
+    grade: Optional[str] = ""
+    remark: Optional[str] = ""
+
+class GradeUpdate(BaseModel):
+    grade: Optional[str] = ""
+    remark: Optional[str] = ""
+
+# Upload Assignment
+@api_router.post("/assignments/upload")
+async def upload_assignment(
+    prn: str = Form(...),
+    class_name: str = Form(...),
+    subject: str = Form(...),
+    file: UploadFile = File(...)
+):
+    """Upload a new assignment"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    # Read file content
+    file_content = await file.read()
+    
+    # Store file in GridFS
+    file_id = await fs_bucket.upload_from_stream(
+        file.filename,
+        io.BytesIO(file_content),
+        metadata={"prn": prn, "subject": subject, "class": class_name}
+    )
+    
+    # Save assignment metadata
+    assignment = {
+        "_id": str(file_id),
+        "prn": prn,
+        "class": class_name,
+        "subject": subject,
+        "fileName": file.filename,
+        "grade": "",
+        "remark": "",
+        "uploadedAt": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.assignments.insert_one(assignment)
+    
+    return {"message": "Assignment uploaded successfully", "assignment_id": str(file_id)}
+
+# Get all assignments for a student
+@api_router.get("/assignments/student/{prn}")
+async def get_student_assignments(prn: str):
+    """Get all assignments for a specific student"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    assignments = await db.assignments.find({"prn": prn}).to_list(1000)
+    
+    # Convert ObjectId to string
+    for assignment in assignments:
+        assignment["_id"] = str(assignment["_id"])
+        assignment["fileUrl"] = f"/api/assignments/file/{assignment['_id']}"
+    
+    return assignments
+
+# Get all assignments
+@api_router.get("/assignments")
+async def get_all_assignments():
+    """Get all assignments"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    assignments = await db.assignments.find().to_list(1000)
+    
+    # Convert ObjectId to string
+    for assignment in assignments:
+        assignment["_id"] = str(assignment["_id"])
+        assignment["fileUrl"] = f"/api/assignments/file/{assignment['_id']}"
+    
+    return assignments
+
+# Get assignment file
+@api_router.get("/assignments/file/{assignment_id}")
+async def get_assignment_file(assignment_id: str):
+    """Download/view assignment file"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    try:
+        # Get file from GridFS
+        grid_out = await fs_bucket.open_download_stream(ObjectId(assignment_id))
+        file_content = await grid_out.read()
+        
+        return StreamingResponse(
+            io.BytesIO(file_content),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"inline; filename={grid_out.filename}"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"File not found: {str(e)}")
+
+# Update grade and remark
+@api_router.put("/assignments/{assignment_id}/grade")
+async def update_grade(assignment_id: str, grade_data: GradeUpdate):
+    """Update grade and remark for an assignment"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    result = await db.assignments.update_one(
+        {"_id": assignment_id},
+        {"$set": {"grade": grade_data.grade, "remark": grade_data.remark}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    
+    return {"message": "Grade updated successfully"}
+
+# Delete assignment
+@api_router.delete("/assignments/{assignment_id}")
+async def delete_assignment(assignment_id: str):
+    """Delete an assignment"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    # Delete from GridFS
+    try:
+        await fs_bucket.delete(ObjectId(assignment_id))
+    except:
+        pass
+    
+    # Delete metadata
+    result = await db.assignments.delete_one({"_id": assignment_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    
+    return {"message": "Assignment deleted successfully"}
+
+# Download Excel report
+@api_router.get("/assignments/download-excel")
+async def download_excel():
+    """Download assignments report as Excel"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
+    assignments = await db.assignments.find().to_list(1000)
+    
+    if not assignments:
+        raise HTTPException(status_code=404, detail="No submissions available")
+    
+    # Create workbook
+    wb = Workbook()
+    
+    # Group by subject
+    grouped = {}
+    for assignment in assignments:
+        subject = assignment.get("subject", "Unknown")
+        if subject not in grouped:
+            grouped[subject] = []
+        grouped[subject].append({
+            "PRN": assignment.get("prn", ""),
+            "Class": assignment.get("class", ""),
+            "File_Name": assignment.get("fileName", ""),
+            "Grade": assignment.get("grade", ""),
+            "Remark": assignment.get("remark", "")
+        })
+    
+    # Create sheets for each subject
+    for subject, data in grouped.items():
+        ws = wb.create_sheet(title=subject[:30])  # Excel sheet name max 31 chars
+        ws.append(["PRN", "Class", "File_Name", "Grade", "Remark"])
+        for row in data:
+            ws.append([row["PRN"], row["Class"], row["File_Name"], row["Grade"], row["Remark"]])
+    
+    # Remove default sheet
+    if "Sheet" in wb.sheetnames:
+        del wb["Sheet"]
+    
+    # Save to bytes
+    excel_buffer = io.BytesIO()
+    wb.save(excel_buffer)
+    excel_buffer.seek(0)
+    
+    return StreamingResponse(
+        excel_buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=assignments.xlsx"}
+    )
 
 app.add_middleware(
     CORSMiddleware,

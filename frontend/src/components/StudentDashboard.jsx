@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { toast } from 'sonner';
-import { LogOut, FileText, GraduationCap, TrendingUp, Award } from 'lucide-react';
+import { LogOut, FileText, GraduationCap, TrendingUp, Award, Upload } from 'lucide-react';
+import AssignmentUpload from './student/AssignmentUpload';
+import AssignmentList from './student/AssignmentList';
 
 const StudentDashboard = ({ user, onLogout }) => {
   const [answerSheets, setAnswerSheets] = useState([]);
@@ -182,72 +185,92 @@ const StudentDashboard = ({ user, onLogout }) => {
           </Card>
         </div>
 
-        {/* Results Table */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white">
-            <CardTitle>My Results</CardTitle>
-            <CardDescription>View your exam marks and feedback</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            {loading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
-                <p className="text-gray-600 font-medium">Loading your results...</p>
-              </div>
-            ) : answerSheets.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No exam results available yet</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4">Subject</th>
-                      <th className="text-left py-3 px-4">Exam Type</th>
-                      <th className="text-left py-3 px-4">Status</th>
-                      <th className="text-left py-3 px-4">Marks</th>
-                      <th className="text-left py-3 px-4">Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {answerSheets.map((sheet) => {
-                      const examDetails = getExamDetails(sheet.exam_id);
-                      return (
-                        <tr key={sheet.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4 font-medium">{examDetails.subjectName}</td>
-                          <td className="py-3 px-4">
-                            <span className="badge badge-info">{examDetails.type}</span>
-                          </td>
-                          <td className="py-3 px-4">
-                            {sheet.status === 'checked' ? (
-                              <span className="badge badge-success">Checked</span>
-                            ) : (
-                              <span className="badge badge-warning">Pending</span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4">
-                            {sheet.marks_obtained !== null ? (
-                              <span className="font-semibold text-lg">
-                                {sheet.marks_obtained}/{examDetails.totalMarks}
-                              </span>
-                            ) : (
-                              <span className="text-gray-400">Not graded</span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4 text-gray-600">
-                            {sheet.remarks || '-'}
-                          </td>
+        {/* Tabs for Exams and Assignments */}
+        <Tabs defaultValue="exams" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="exams">Exam Results</TabsTrigger>
+            <TabsTrigger value="assignments">
+              <Upload className="w-4 h-4 mr-2" />
+              Assignments
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="exams">
+            {/* Results Table */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white">
+                <CardTitle>My Results</CardTitle>
+                <CardDescription>View your exam marks and feedback</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+                    <p className="text-gray-600 font-medium">Loading your results...</p>
+                  </div>
+                ) : answerSheets.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">No exam results available yet</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-4">Subject</th>
+                          <th className="text-left py-3 px-4">Exam Type</th>
+                          <th className="text-left py-3 px-4">Status</th>
+                          <th className="text-left py-3 px-4">Marks</th>
+                          <th className="text-left py-3 px-4">Remarks</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      </thead>
+                      <tbody>
+                        {answerSheets.map((sheet) => {
+                          const examDetails = getExamDetails(sheet.exam_id);
+                          return (
+                            <tr key={sheet.id} className="border-b hover:bg-gray-50">
+                              <td className="py-3 px-4 font-medium">{examDetails.subjectName}</td>
+                              <td className="py-3 px-4">
+                                <span className="badge badge-info">{examDetails.type}</span>
+                              </td>
+                              <td className="py-3 px-4">
+                                {sheet.status === 'checked' ? (
+                                  <span className="badge badge-success">Checked</span>
+                                ) : (
+                                  <span className="badge badge-warning">Pending</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4">
+                                {sheet.marks_obtained !== null ? (
+                                  <span className="font-semibold text-lg">
+                                    {sheet.marks_obtained}/{examDetails.totalMarks}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400">Not graded</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4 text-gray-600">
+                                {sheet.remarks || '-'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="assignments">
+            <div className="space-y-6">
+              <AssignmentUpload user={user} studentData={studentData} />
+              <AssignmentList user={user} studentData={studentData} />
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
