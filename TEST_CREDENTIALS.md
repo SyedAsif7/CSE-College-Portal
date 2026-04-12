@@ -1,4 +1,4 @@
-# GradeFlow System - Test Login Credentials
+# SSIEMS CSE Academic Portal - Test Login Credentials
 
 ## 📋 Available Test Accounts
 
@@ -148,7 +148,7 @@ Navbar:
 └── Secure Login (opens login page)
 
 Landing Page Modules:
-├── GradeFlow Portal (Exams + Assignments)
+├── Academic Portal (Exams + Assignments)
 └── Academic Resources
 ```
 

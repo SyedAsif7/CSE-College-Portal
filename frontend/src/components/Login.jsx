@@ -48,7 +48,7 @@ const Login = ({ onLogin }) => {
             </div>
           </div>
           <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            GradeFlow System
+            SSIEMS CSE Academic Portal
           </CardTitle>
           <CardDescription className="text-center text-base">
             Sign in to access your dashboard

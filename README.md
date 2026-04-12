@@ -1,4 +1,4 @@
-# GradeFlow System
+# SSIEMS CSE Academic Portal
 
 A comprehensive academic examination evaluation platform that digitizes and streamlines the traditional paper-based examination process.
 
@@ -19,7 +19,7 @@ A comprehensive academic examination evaluation platform that digitizes and stre
 
 ## Overview
 
-GradeFlow System is a full-stack web application designed to revolutionize how educational institutions manage student assessments. By digitizing the examination evaluation process, it reduces administrative overhead, improves data accuracy, and provides real-time insights into student performance.
+SSIEMS CSE Academic Portal is a full-stack web application designed to revolutionize how educational institutions manage student assessments. By digitizing the examination evaluation process, it reduces administrative overhead, improves data accuracy, and provides real-time insights into student performance.
 
 The system provides role-based dashboards for administrators, teachers, and students, enabling efficient management of academic data from enrollment to result generation.
 
@@ -243,21 +243,14 @@ The frontend is configured for Vercel deployment:
 2. Navigate to frontend directory
 3. Deploy: `vercel`
 
-## Project Structure
+## 🚀 System Architecture
 
-```
+```text
 gradeflow_system/
-├── backend/                   # FastAPI Server & Database Logic
-├── frontend/                  # React GradeFlow Application & Landing Page
-│   ├── public/                # Public assets (includes static Timetable)
-│   │   └── timetable/         # SSIEMS Academic Timetable System (Static)
-│   ├── src/                   # React source code (GradeFlow & Faculty)
-│   └── package.json           # Frontend dependencies
-├── .gitignore                 # Global version control exclusions
-├── docker-compose.yml         # Docker orchestration
-├── README.md                  # Unified project guide
-├── start-system.ps1           # Automated startup script
-└── vercel.json                # Vercel deployment configuration
+├── backend/                  # Python FastAPI Backend
+├── frontend/                  # React Academic Application & Landing Page
+│   ├── public/                # Static assets & Timetables
+│   ├── src/                   # React source code (Portal & Faculty)
 ```
 
 ## Contributing

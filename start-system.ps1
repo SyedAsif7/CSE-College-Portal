@@ -1,7 +1,7 @@
-# GradeFlow System Startup Script
-# This script starts both the backend and frontend servers
+# SSIEMS CSE Academic Portal Startup Script
+# Usage: .\start-system.ps1
 
-Write-Host "🚀 Starting GradeFlow System..." -ForegroundColor Green
+Write-Host "🚀 Starting SSIEMS CSE Academic Portal..." -ForegroundColor Green
 
 # Start Backend Server
 Write-Host "🔧 Starting Backend Server (FastAPI)..." -ForegroundColor Yellow
