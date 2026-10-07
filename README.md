@@ -1,4 +1,5 @@
-# 🎓 GradeFlow System - SSIEMS CSE Academic Portal
+# CSE-College-Portal
+# 🎓 SSIEMS CSE Academic Portal
 
 A comprehensive academic management system designed for the Department of Computer Science & Engineering at SSIEMS. This platform streamlines academic workflows, student tracking, and institutional data management.
 
@@ -38,8 +39,8 @@ gradeflow_system/
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/SyedAsif7/gradeflow_system.git
-   cd gradeflow_system
+   git clone https://github.com/SyedAsif7/CSE-College-Portal.git
+   cd CSE-College-Portal
    ```
 
 2. **Backend Configuration**

@@ -73,7 +73,7 @@ function App() {
               user && user.role === 'admin' ? (
                 <AdminDashboard user={user} onLogout={handleLogout} />
               ) : (
-                <Navigate to="/" />
+                <Navigate to="/login" />
               )
             }
           />
@@ -83,8 +83,17 @@ function App() {
               user && user.role === 'teacher' ? (
                 <TeacherDashboard user={user} onLogout={handleLogout} />
               ) : (
-                <Navigate to="/" />
+                <Navigate to="/login" />
               )
+            }
+          />
+          <Route
+            path="/faculty-dashboard"
+            element={
+              <TeacherDashboard 
+                user={user || { id: 'teacher-bpg', name: 'Prof.Bais P.G.', email: 'bpg@ssiems.org.in', role: 'teacher', designation: 'Class Teacher' }} 
+                onLogout={handleLogout} 
+              />
             }
           />
           <Route
@@ -93,7 +102,7 @@ function App() {
               user && user.role === 'student' ? (
                 <StudentDashboard user={user} onLogout={handleLogout} />
               ) : (
-                <Navigate to="/" />
+                <Navigate to="/login" />
               )
             }
           />

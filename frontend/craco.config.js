@@ -266,6 +266,7 @@ webpackConfig.devServer = (devServerConfig) => {
     port: wsPort,
     host: wsHost,
     allowedHosts: 'all',
+    historyApiFallback: true,
   };
   
   // Configure WebSocket based on disableWebSocket flag
@@ -417,6 +418,7 @@ webpackConfig.devServer = (devServerConfig) => {
     });
   }
 
+  devServerConfig.historyApiFallback = true;
   return devServerConfig;
 };
 

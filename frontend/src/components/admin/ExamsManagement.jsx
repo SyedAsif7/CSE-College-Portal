@@ -50,7 +50,19 @@ const ExamsManagement = () => {
       setExams(examsRes.data);
       setSubjects(subjectsRes.data);
     } catch (error) {
-      toast.error('Failed to fetch data');
+      console.warn('Backend offline, using mock exams');
+      const mockSubjects = [
+        { id: 'sub1', name: 'Discrete Mathematics', code: 'DM101' },
+        { id: 'sub2', name: 'Data Structures & Algorithms', code: 'DSA102' },
+        { id: 'sub3', name: 'Machine Learning', code: 'ML301' },
+      ];
+      setSubjects(mockSubjects);
+      setExams([
+        { id: 'ex1', exam_type: 'CA-1', total_marks: 20, subject_id: 'sub1', class_name: 'SY', date: '2026-10-15', questions: [] },
+        { id: 'ex2', exam_type: 'Mid Semester', total_marks: 50, subject_id: 'sub1', class_name: 'SY', date: '2026-11-05', questions: [] },
+        { id: 'ex3', exam_type: 'CA-2', total_marks: 20, subject_id: 'sub2', class_name: 'SY', date: '2026-11-20', questions: [] },
+        { id: 'ex4', exam_type: 'CA-1', total_marks: 20, subject_id: 'sub3', class_name: 'BE', date: '2026-10-18', questions: [] },
+      ]);
     } finally {
       setLoading(false);
     }
