@@ -5,7 +5,7 @@ A comprehensive academic management system designed for the Department of Comput
 
 ## 🚀 Live Demo
 - **Frontend**: [gradeflow-system-h4ne.vercel.app](https://gradeflow-system-h4ne.vercel.app)
-- **Backend API**: [ssiems-cse-academic-portal.onrender.com](https://ssiems-cse-academic-portal.onrender.com)
+- **Backend API**: [cse-college-portal-api.onrender.com](https://cse-college-portal-api.onrender.com)
 
 ## ✨ Key Features
 - **Modern UI/UX**: Fully responsive dashboard for Students, Teachers, and Admins.
