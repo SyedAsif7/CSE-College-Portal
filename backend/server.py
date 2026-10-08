@@ -1516,6 +1516,7 @@ class NoticeModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     content: str
+    category: Optional[str] = "Academic"
     author: Optional[str] = "Prof. Pawar V.K. (HOD)"
     target: Optional[str] = "All Students & Faculty"
     priority: Optional[str] = "Normal"
@@ -1526,6 +1527,7 @@ class NoticeModel(BaseModel):
 class NoticeCreate(BaseModel):
     title: str
     content: str
+    category: Optional[str] = "Academic"
     author: Optional[str] = "Prof. Pawar V.K. (HOD)"
     target: Optional[str] = "All Students & Faculty"
     priority: Optional[str] = "Normal"
@@ -2158,6 +2160,182 @@ async def delete_leave(leave_id: str):
         raise HTTPException(status_code=404, detail="Leave application not found")
         
     return {"message": "Leave application deleted successfully"}
+
+# ----------------------------------------------------------------------------
+# EXCEL REPORTS EXPORT ENDPOINTS
+# ----------------------------------------------------------------------------
+@api_router.get("/reports/students/export")
+async def export_students_report(class_year: Optional[str] = None):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from io import BytesIO
+    from fastapi.responses import StreamingResponse
+    
+    database = get_db()
+    if database is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
+    query = {}
+    if class_year and class_year.upper() != "ALL":
+        query["class_name"] = {"$regex": class_year, "$options": "i"}
+        
+    students = await database.students.find(query, {"_id": 0}).sort("roll_number", 1).to_list(1000)
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Student Directory"
+    
+    # Title Banner
+    ws.merge_cells("A1:G1")
+    title_cell = ws["A1"]
+    year_label = f"({class_year.upper()} Batch)" if (class_year and class_year.upper() != "ALL") else "(All Batches)"
+    title_cell.value = f"SHRI SHIVAJI INSTITUTE OF ENGINEERING & MANAGEMENT STUDIES, PARBHANI\nDEPARTMENT OF COMPUTER SCIENCE & ENGINEERING\nSTUDENT DIRECTORY REGISTER {year_label}"
+    title_cell.font = Font(name="Calibri", size=12, bold=True, color="1E3A8A")
+    title_cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.row_dimensions[1].height = 45
+    
+    headers = ["Sr No", "Roll Number", "PRN / ID", "Full Name", "Class / Year", "Semester", "Email"]
+    header_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    thin_border = Border(
+        left=Side(style='thin', color='CBD5E1'),
+        right=Side(style='thin', color='CBD5E1'),
+        top=Side(style='thin', color='CBD5E1'),
+        bottom=Side(style='thin', color='CBD5E1')
+    )
+    
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws.cell(row=3, column=col_idx, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.border = thin_border
+    ws.row_dimensions[3].height = 25
+    
+    zebra_fill = PatternFill(start_color="F8FAFC", end_color="F8FAFC", fill_type="solid")
+    for row_idx, s in enumerate(students, 4):
+        sr_cell = ws.cell(row=row_idx, column=1, value=row_idx - 3)
+        roll_cell = ws.cell(row=row_idx, column=2, value=s.get("roll_number", "-"))
+        prn_cell = ws.cell(row=row_idx, column=3, value=s.get("prn", "-"))
+        name_cell = ws.cell(row=row_idx, column=4, value=s.get("name", "-"))
+        class_cell = ws.cell(row=row_idx, column=5, value=s.get("class_name", "-"))
+        sem_cell = ws.cell(row=row_idx, column=6, value=s.get("semester", "-"))
+        email_cell = ws.cell(row=row_idx, column=7, value=s.get("email", "-"))
+        
+        for c in [sr_cell, roll_cell, prn_cell, name_cell, class_cell, sem_cell, email_cell]:
+            c.border = thin_border
+            if row_idx % 2 == 0:
+                c.fill = zebra_fill
+        sr_cell.alignment = Alignment(horizontal="center")
+        roll_cell.alignment = Alignment(horizontal="center")
+        prn_cell.alignment = Alignment(horizontal="center")
+        class_cell.alignment = Alignment(horizontal="center")
+        sem_cell.alignment = Alignment(horizontal="center")
+    
+    col_widths = {"A": 8, "B": 18, "C": 16, "D": 28, "E": 14, "F": 12, "G": 28}
+    for col_letter, width in col_widths.items():
+        ws.column_dimensions[col_letter].width = width
+        
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+    
+    filename = f"SSIEMS_Student_Directory_{class_year or 'All'}.xlsx"
+    return StreamingResponse(
+        stream,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@api_router.get("/reports/leaves/export")
+async def export_faculty_leaves_report():
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from io import BytesIO
+    from fastapi.responses import StreamingResponse
+    
+    database = get_db()
+    if database is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
+    leaves = await database.faculty_leaves.find({}, {"_id": 0}).sort("applied_at", -1).to_list(1000)
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Faculty Leaves"
+    
+    ws.merge_cells("A1:I1")
+    title_cell = ws["A1"]
+    title_cell.value = "SHRI SHIVAJI INSTITUTE OF ENGINEERING & MANAGEMENT STUDIES, PARBHANI\nDEPARTMENT OF COMPUTER SCIENCE & ENGINEERING\nFACULTY LEAVE & CASUAL LEAVE (CL) REGISTER"
+    title_cell.font = Font(name="Calibri", size=12, bold=True, color="065F46")
+    title_cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.row_dimensions[1].height = 45
+    
+    headers = ["Sr No", "Faculty Name", "Leave Type", "Start Date", "End Date", "Days", "Reason", "Status", "Reviewed By"]
+    header_fill = PatternFill(start_color="065F46", end_color="065F46", fill_type="solid")
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    thin_border = Border(
+        left=Side(style='thin', color='CBD5E1'),
+        right=Side(style='thin', color='CBD5E1'),
+        top=Side(style='thin', color='CBD5E1'),
+        bottom=Side(style='thin', color='CBD5E1')
+    )
+    
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws.cell(row=3, column=col_idx, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.border = thin_border
+    ws.row_dimensions[3].height = 25
+    
+    zebra_fill = PatternFill(start_color="F8FAFC", end_color="F8FAFC", fill_type="solid")
+    for row_idx, l in enumerate(leaves, 4):
+        sr_cell = ws.cell(row=row_idx, column=1, value=row_idx - 3)
+        name_cell = ws.cell(row=row_idx, column=2, value=l.get("teacher_name", "-"))
+        type_cell = ws.cell(row=row_idx, column=3, value=l.get("leave_type", "CL"))
+        start_cell = ws.cell(row=row_idx, column=4, value=l.get("start_date", "-"))
+        end_cell = ws.cell(row=row_idx, column=5, value=l.get("end_date", "-"))
+        days_cell = ws.cell(row=row_idx, column=6, value=l.get("days", 1))
+        reason_cell = ws.cell(row=row_idx, column=7, value=l.get("reason", "-"))
+        status_cell = ws.cell(row=row_idx, column=8, value=str(l.get("status", "pending")).capitalize())
+        by_cell = ws.cell(row=row_idx, column=9, value=l.get("reviewed_by", "-"))
+        
+        for c in [sr_cell, name_cell, type_cell, start_cell, end_cell, days_cell, reason_cell, status_cell, by_cell]:
+            c.border = thin_border
+            if row_idx % 2 == 0:
+                c.fill = zebra_fill
+        sr_cell.alignment = Alignment(horizontal="center")
+        type_cell.alignment = Alignment(horizontal="center")
+        start_cell.alignment = Alignment(horizontal="center")
+        end_cell.alignment = Alignment(horizontal="center")
+        days_cell.alignment = Alignment(horizontal="center")
+        status_cell.alignment = Alignment(horizontal="center")
+    
+    col_widths = {"A": 8, "B": 24, "C": 14, "D": 14, "E": 14, "F": 10, "G": 30, "H": 14, "I": 24}
+    for col_letter, width in col_widths.items():
+        ws.column_dimensions[col_letter].width = width
+        
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+    
+    filename = "SSIEMS_Faculty_Leave_Register.xlsx"
+    return StreamingResponse(
+        stream,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@api_router.delete("/attendance/session/{session_id}")
+async def delete_attendance_session(session_id: str):
+    database = get_db()
+    if database is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+    res = await database.attendance.delete_one({"id": session_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Attendance session not found")
+    return {"message": "Attendance record deleted successfully"}
 
 app.add_middleware(
     CORSMiddleware,

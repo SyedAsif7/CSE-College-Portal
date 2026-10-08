@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { 
   Plus, Edit, Trash2, User, Search, Download, Filter, 
   GraduationCap, Users, Calendar, Award, ChevronLeft, ChevronRight,
-  BookOpen, Sparkles, CheckCircle2, School
+  BookOpen, Sparkles, CheckCircle2, School, FileSpreadsheet, Printer, FileText
 } from 'lucide-react';
 
 const StudentsManagement = () => {
@@ -190,7 +190,7 @@ const StudentsManagement = () => {
     });
   };
 
-  // Export CSV
+  // Export CSV fallback
   const exportStudentsCSV = () => {
     if (!filteredStudents.length) {
       toast.warning('No student records to export');
@@ -216,7 +216,126 @@ const StudentsManagement = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success(`Exported ${filteredStudents.length} student records for ${selectedYear === 'ALL' ? 'All Batches' : selectedYear} to CSV`);
+    toast.success(`Exported ${filteredStudents.length} student records to CSV`);
+  };
+
+  // Export Excel (.xlsx) from backend or client fallback
+  const exportStudentsExcel = async () => {
+    if (!filteredStudents.length) {
+      toast.warning('No student records to export');
+      return;
+    }
+
+    try {
+      toast.loading('Generating Excel register...', { id: 'export-excel' });
+      const res = await api.get(`/reports/students/export?class_year=${selectedYear}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `SSIEMS_Students_${selectedYear}_Register.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success(`Exported ${selectedYear} Student Directory to Excel (.xlsx)!`, { id: 'export-excel' });
+    } catch (err) {
+      exportStudentsCSV();
+      toast.info('Exported as CSV register', { id: 'export-excel' });
+    }
+  };
+
+  // Print / Export PDF Official Nominal Roll
+  const exportStudentsPDF = () => {
+    if (!filteredStudents.length) {
+      toast.warning('No student records to generate PDF');
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast.error('Pop-up was blocked. Please enable pop-ups to print PDF.');
+      return;
+    }
+
+    const rowsHtml = filteredStudents.map((s, idx) => `
+      <tr>
+        <td style="text-align: center;">${idx + 1}</td>
+        <td style="text-align: center; font-weight: bold;">${s.roll_number || '-'}</td>
+        <td style="text-align: center;">${s.prn || '-'}</td>
+        <td><strong>${s.name || '-'}</strong></td>
+        <td style="text-align: center;">${s.class_name || '-'}</td>
+        <td style="text-align: center;">${s.semester || '-'}</td>
+        <td>${s.email || '-'}</td>
+      </tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>SSIEMS Student Directory - ${selectedYear}</title>
+          <style>
+            @page { size: A4 landscape; margin: 15mm; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; margin: 0; padding: 20px; font-size: 11px; }
+            .header { text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 16px; }
+            .trust { font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 0.5px; }
+            .college { font-size: 16px; font-weight: 900; color: #1e3a8a; margin: 3px 0; }
+            .sub { font-size: 11px; color: #64748b; }
+            .title { font-size: 13px; font-weight: 800; background: #eff6ff; color: #1e3a8a; padding: 6px; border: 1px solid #bfdbfe; border-radius: 4px; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+            .meta { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; font-size: 11px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; }
+            th { background: #1e3a8a; color: #ffffff; font-weight: 700; text-align: left; }
+            tr:nth-child(even) { background: #f8fafc; }
+            .footer { margin-top: 35px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; }
+            .seal-box { border-top: 1px solid #94a3b8; width: 180px; text-align: center; padding-top: 4px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="trust">SHRI SHIVAJI SAMAJIK VIKAS SANSTHA'S</div>
+            <div class="college">SHRI SHIVAJI INSTITUTE OF ENGINEERING & MANAGEMENT STUDIES, PARBHANI</div>
+            <div class="sub">Department of Computer Science & Engineering • Approved by AICTE, Affiliated to Dr. BATU, Lonere • NAAC Accredited</div>
+            <div class="title">OFFICIAL STUDENT DIRECTORY & NOMINAL ROLL REGISTER (${selectedYear === 'ALL' ? 'ALL ACADEMIC BATCHES' : selectedYear + ' BATCH'})</div>
+          </div>
+          <div class="meta">
+            <div>Academic Session: 2026–2027</div>
+            <div>Total Enrolled: ${filteredStudents.length} Students</div>
+            <div>Generated Date: ${new Date().toLocaleDateString('en-GB')}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 35px; text-align: center;">Sr</th>
+                <th style="width: 100px; text-align: center;">Roll No</th>
+                <th style="width: 100px; text-align: center;">PRN</th>
+                <th>Student Full Name</th>
+                <th style="width: 70px; text-align: center;">Class</th>
+                <th style="width: 70px; text-align: center;">Semester</th>
+                <th>Institutional Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+          <div class="footer">
+            <div class="seal-box">Prepared By (Academic Coordinator)</div>
+            <div class="seal-box">Verified By (Class Teacher)</div>
+            <div class="seal-box">Head of Department (Prof. Pawar V.K.)</div>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
   };
 
   const yearTabs = [
@@ -246,15 +365,27 @@ const StudentsManagement = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
-            onClick={exportStudentsCSV}
+            onClick={exportStudentsExcel}
             variant="outline"
             size="sm"
-            className="text-xs rounded-xl border-slate-200 dark:border-slate-700 font-bold"
+            className="text-xs rounded-xl border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 font-bold"
+            title="Download formatted Excel sheet"
           >
-            <Download className="w-3.5 h-3.5 mr-1.5" />
-            Export Directory
+            <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+            Export Excel (.xlsx)
+          </Button>
+
+          <Button
+            onClick={exportStudentsPDF}
+            variant="outline"
+            size="sm"
+            className="text-xs rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold"
+            title="Print or save as PDF"
+          >
+            <Printer className="w-3.5 h-3.5 mr-1.5" />
+            Print / PDF
           </Button>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

@@ -23,7 +23,9 @@ import {
   FileText,
   Calendar,
   Sparkles,
-  School
+  School,
+  FileSpreadsheet,
+  Printer
 } from 'lucide-react';
 
 const FacultyLeavesApproval = ({ onUpdate }) => {
@@ -197,6 +199,129 @@ const FacultyLeavesApproval = ({ onUpdate }) => {
     toast.success('Department Faculty Leave Register exported to CSV');
   };
 
+  // Export Excel (.xlsx) from backend
+  const exportLeavesExcel = async () => {
+    if (!leaves.length) {
+      toast.warning('No leave records to export');
+      return;
+    }
+
+    try {
+      toast.loading('Generating Excel leave register...', { id: 'export-leaves-excel' });
+      const res = await api.get('/reports/leaves/export', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `SSIEMS_Faculty_Leave_Register_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success('Department Faculty Leave Register exported to Excel (.xlsx)!', { id: 'export-leaves-excel' });
+    } catch (err) {
+      exportLeavesCSV();
+      toast.info('Exported as CSV register', { id: 'export-leaves-excel' });
+    }
+  };
+
+  // Print / Export PDF Official Leave Register
+  const exportLeavesPDF = () => {
+    if (!leaves.length) {
+      toast.warning('No leave records to generate PDF');
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast.error('Pop-up was blocked. Please enable pop-ups to print PDF.');
+      return;
+    }
+
+    const rowsHtml = leaves.map((l, idx) => `
+      <tr>
+        <td style="text-align: center;">${idx + 1}</td>
+        <td><strong>${l.teacher_name || '-'}</strong></td>
+        <td style="text-align: center; font-weight: bold;">${l.leave_title || l.leave_type || 'CL'}</td>
+        <td style="text-align: center;">${l.start_date || '-'} to ${l.end_date || '-'}</td>
+        <td style="text-align: center; font-weight: bold;">${l.total_days || 1}</td>
+        <td>${l.reason || '-'}</td>
+        <td style="text-align: center; font-weight: bold; color: ${l.status === 'approved' ? '#047857' : l.status === 'rejected' ? '#b91c1c' : '#b45309'}; text-transform: uppercase;">
+          ${l.status || 'Pending'}
+        </td>
+        <td>${l.hod_remarks || '-'}</td>
+      </tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>SSIEMS Faculty Leave Register</title>
+          <style>
+            @page { size: A4 landscape; margin: 15mm; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; margin: 0; padding: 20px; font-size: 11px; }
+            .header { text-align: center; border-bottom: 2px solid #065f46; padding-bottom: 12px; margin-bottom: 16px; }
+            .trust { font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 0.5px; }
+            .college { font-size: 16px; font-weight: 900; color: #065f46; margin: 3px 0; }
+            .sub { font-size: 11px; color: #64748b; }
+            .title { font-size: 13px; font-weight: 800; background: #ecfdf5; color: #065f46; padding: 6px; border: 1px solid #a7f3d0; border-radius: 4px; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+            .meta { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; font-size: 11px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; }
+            th { background: #065f46; color: #ffffff; font-weight: 700; text-align: left; }
+            tr:nth-child(even) { background: #f8fafc; }
+            .footer { margin-top: 35px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; }
+            .seal-box { border-top: 1px solid #94a3b8; width: 180px; text-align: center; padding-top: 4px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="trust">SHRI SHIVAJI SAMAJIK VIKAS SANSTHA'S</div>
+            <div class="college">SHRI SHIVAJI INSTITUTE OF ENGINEERING & MANAGEMENT STUDIES, PARBHANI</div>
+            <div class="sub">Department of Computer Science & Engineering • Approved by AICTE, Affiliated to Dr. BATU, Lonere • NAAC Accredited</div>
+            <div class="title">OFFICIAL FACULTY LEAVE & CASUAL LEAVE (CL) DISPATCH REGISTER</div>
+          </div>
+          <div class="meta">
+            <div>Academic Session: 2026–2027</div>
+            <div>Total Leave Applications: ${leaves.length}</div>
+            <div>Generated Date: ${new Date().toLocaleDateString('en-GB')}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 35px; text-align: center;">Sr</th>
+                <th>Faculty Name</th>
+                <th style="width: 70px; text-align: center;">Type</th>
+                <th style="width: 150px; text-align: center;">Leave Duration</th>
+                <th style="width: 50px; text-align: center;">Days</th>
+                <th>Reason for Leave</th>
+                <th style="width: 80px; text-align: center;">Status</th>
+                <th>HOD Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+          <div class="footer">
+            <div class="seal-box">Department Clerk</div>
+            <div class="seal-box">Establishment Section</div>
+            <div class="seal-box">Head of Department (Prof. Pawar V.K.)</div>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
+  };
+
   // Filtered lists
   const pendingLeaves = leaves.filter(l => l.status === 'pending');
 
@@ -232,15 +357,27 @@ const FacultyLeavesApproval = ({ onUpdate }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
-            onClick={exportLeavesCSV}
+            onClick={exportLeavesExcel}
             variant="outline"
             size="sm"
-            className="text-xs rounded-xl border-slate-200 dark:border-slate-700 font-bold"
+            className="text-xs rounded-xl border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 font-bold"
+            title="Download formatted Excel sheet"
           >
-            <Download className="w-3.5 h-3.5 mr-1.5" />
-            Export Leave Register
+            <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+            Export Excel (.xlsx)
+          </Button>
+
+          <Button
+            onClick={exportLeavesPDF}
+            variant="outline"
+            size="sm"
+            className="text-xs rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold"
+            title="Print or save as PDF"
+          >
+            <Printer className="w-3.5 h-3.5 mr-1.5" />
+            Print / PDF
           </Button>
         </div>
       </div>

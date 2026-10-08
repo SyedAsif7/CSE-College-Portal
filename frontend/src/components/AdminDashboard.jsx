@@ -15,7 +15,7 @@ import {
   LayoutDashboard, Users, BookOpen, FileText, GraduationCap, UserCheck, 
   BarChart3, Upload, ShieldCheck, Bell, Search, Plus, Send, Award, 
   Download, Clock, School, Layers, Settings, FileSpreadsheet, Sparkles,
-  TrendingUp, CheckCircle2, AlertCircle, ArrowUpRight, CalendarDays
+  TrendingUp, CheckCircle2, AlertCircle, ArrowUpRight, CalendarDays, CheckSquare
 } from 'lucide-react';
 import StudentsManagement from './admin/StudentsManagement';
 import TeachersManagement from './admin/TeachersManagement';
@@ -24,6 +24,8 @@ import ExamsManagement from './admin/ExamsManagement';
 import AnswerSheetsManagement from './admin/AnswerSheetsManagement';
 import AssignmentsManagement from './admin/AssignmentsManagement';
 import FacultyLeavesApproval from './admin/FacultyLeavesApproval';
+import AttendanceManager from './common/AttendanceManager';
+import NoticeBoard from './common/NoticeBoard';
 
 const AdminDashboard = ({ user, onLogout }) => {
   const [activeNav, setActiveNav] = useState('overview');
@@ -186,6 +188,7 @@ const AdminDashboard = ({ user, onLogout }) => {
         { id: 'subjects', label: 'Curriculum & Subjects', icon: BookOpen, badge: stats.subjects },
         { id: 'exams', label: 'Examinations', icon: FileText, badge: stats.exams },
         { id: 'assignments', label: 'Academic Assignments', icon: Layers, badge: 'All' },
+        { id: 'attendance', label: 'Attendance Tracker', icon: CheckSquare, badge: 'SY/TY/BE' },
         { id: 'answer-sheets', label: 'Answer Sheet Evaluation', icon: GraduationCap, badge: stats.pending_sheets > 0 ? `${stats.pending_sheets} pending` : null },
         { id: 'leaves', label: 'Faculty Leaves & CL Approval', icon: CalendarDays, badge: leavesSummary.pending > 0 ? `${leavesSummary.pending} pending` : null },
       ]
@@ -587,97 +590,164 @@ const AdminDashboard = ({ user, onLogout }) => {
         </div>
       )}
 
+      {/* VIEW 7C: ATTENDANCE TRACKER */}
+      {activeNav === 'attendance' && (
+        <div className="animate-in fade-in duration-150">
+          <AttendanceManager user={user} role="admin" />
+        </div>
+      )}
+
       {/* VIEW 8: NOTICES & CIRCULARS */}
       {activeNav === 'notices' && (
-        <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 animate-in fade-in duration-150 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Department Circulars & Notice Broadcaster</h3>
-              <p className="text-xs text-slate-500">Official directives issued under seal of HOD Office</p>
-            </div>
-            <Button
-              onClick={() => setNoticeModalOpen(true)}
-              className="bg-violet-700 hover:bg-violet-800 text-white text-xs rounded-xl font-semibold"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1.5" /> Broadcast New Circular
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {notices.map((n) => (
-              <div key={n.id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">{n.title}</span>
-                    {n.urgent && <StatusBadge status="urgent" text="Urgent Alert" />}
-                  </div>
-                  <span className="text-xs text-slate-400">{n.date}</span>
-                </div>
-                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{n.content}</p>
-                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700/60 text-xs text-slate-500">
-                  <span>Issued by: <strong>{n.author}</strong></span>
-                  <span className="bg-slate-200 dark:bg-slate-700 px-2.5 py-0.5 rounded-md text-[11px]">Recipient: {n.target}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <div className="animate-in fade-in duration-150">
+          <NoticeBoard user={user} role="admin" />
+        </div>
       )}
 
       {/* VIEW 9: REPORTS & ANALYTICS */}
       {activeNav === 'reports' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-150">
-          <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 space-y-4">
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">Class-Wise Pass Percentages</h3>
-            <p className="text-xs text-slate-500">Aggregated performance across Semester-III and Semester-V</p>
-            <div className="space-y-3 pt-2">
-              <div className="flex justify-between text-xs font-semibold">
-                <span>Second Year (SY-CSE) Pass Rate</span>
-                <strong className="text-emerald-600">94.2%</strong>
+        <div className="space-y-6 animate-in fade-in duration-150">
+          {/* Export Center Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-3 bg-gradient-to-br from-blue-50/50 to-indigo-50/20 dark:from-slate-900 dark:to-slate-900">
+              <div className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400">
+                <FileSpreadsheet className="w-5 h-5" />
+                <h4 className="text-sm font-bold">Student Directory Register</h4>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '94.2%' }}></div>
+              <p className="text-xs text-slate-500">Official nominal roll across all batches or by year (SY / TY / BE).</p>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      toast.loading('Downloading Student Register...', { id: 'rep-stu' });
+                      const res = await api.get('/reports/students/export?class_year=ALL', { responseType: 'blob' });
+                      const url = window.URL.createObjectURL(new Blob([res.data]));
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.setAttribute('download', 'SSIEMS_All_Students_Register.xlsx');
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      toast.success('Downloaded Student Directory Excel!', { id: 'rep-stu' });
+                    } catch (e) {
+                      toast.error('Could not download register', { id: 'rep-stu' });
+                    }
+                  }}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold"
+                >
+                  <Download className="w-3.5 h-3.5 mr-1.5" /> Download (.xlsx)
+                </Button>
               </div>
-              <div className="flex justify-between text-xs font-semibold pt-2">
-                <span>Third Year (TY-CSE) Pass Rate</span>
-                <strong className="text-blue-600">89.6%</strong>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '89.6%' }}></div>
-              </div>
-              <div className="flex justify-between text-xs font-semibold pt-2">
-                <span>Final Year (BE-CSE) Pass Rate</span>
-                <strong className="text-purple-600">96.0%</strong>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-purple-500 h-2 rounded-full" style={{ width: '96.0%' }}></div>
-              </div>
-            </div>
-          </Card>
+            </Card>
 
-          <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 space-y-4">
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">Master Tabulation Register</h3>
-            <p className="text-xs text-slate-500">Generate University DBATU format consolidated marks report</p>
-            <div className="space-y-2 pt-2">
-              <Label className="text-xs font-semibold">Select Target Batch</Label>
-              <Select defaultValue="sy">
-                <SelectTrigger className="rounded-xl text-xs">
-                  <SelectValue placeholder="Choose batch" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sy">SY-CSE (Semester III)</SelectItem>
-                  <SelectItem value="ty">TY-CSE (Semester V)</SelectItem>
-                  <SelectItem value="be">BE-CSE (Semester VII)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button 
-              onClick={() => toast.success('Department Master Tabulation Register downloaded successfully!')}
-              className="w-full bg-violet-700 hover:bg-violet-800 text-white rounded-xl text-xs font-semibold"
-            >
-              <Download className="w-3.5 h-3.5 mr-2" /> Download Tabulation Register (Excel)
-            </Button>
-          </Card>
+            <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-3 bg-gradient-to-br from-emerald-50/50 to-teal-50/20 dark:from-slate-900 dark:to-slate-900">
+              <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400">
+                <FileSpreadsheet className="w-5 h-5" />
+                <h4 className="text-sm font-bold">Faculty Leave Register</h4>
+              </div>
+              <p className="text-xs text-slate-500">Department faculty casual leave (CL) logs, reasons & approval remarks.</p>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      toast.loading('Downloading Leave Register...', { id: 'rep-leave' });
+                      const res = await api.get('/reports/leaves/export', { responseType: 'blob' });
+                      const url = window.URL.createObjectURL(new Blob([res.data]));
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.setAttribute('download', 'SSIEMS_Faculty_Leave_Register.xlsx');
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      toast.success('Downloaded Leave Register Excel!', { id: 'rep-leave' });
+                    } catch (e) {
+                      toast.error('Could not download leave register', { id: 'rep-leave' });
+                    }
+                  }}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold"
+                >
+                  <Download className="w-3.5 h-3.5 mr-1.5" /> Download (.xlsx)
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-3 bg-gradient-to-br from-purple-50/50 to-violet-50/20 dark:from-slate-900 dark:to-slate-900">
+              <div className="flex items-center space-x-2 text-purple-600 dark:text-purple-400">
+                <FileSpreadsheet className="w-5 h-5" />
+                <h4 className="text-sm font-bold">Master Tabulation Register</h4>
+              </div>
+              <p className="text-xs text-slate-500">University DBATU format continuous assessment & consolidated marks.</p>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  size="sm"
+                  onClick={() => toast.success('Master Tabulation Register generated')}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold"
+                >
+                  <Download className="w-3.5 h-3.5 mr-1.5" /> Download (.xlsx)
+                </Button>
+              </div>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 space-y-4">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Class-Wise Pass Percentages</h3>
+              <p className="text-xs text-slate-500">Aggregated performance across Semester-III and Semester-V</p>
+              <div className="space-y-3 pt-2">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span>Second Year (SY-CSE) Pass Rate</span>
+                  <strong className="text-emerald-600">94.2%</strong>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '94.2%' }}></div>
+                </div>
+                <div className="flex justify-between text-xs font-semibold pt-2">
+                  <span>Third Year (TY-CSE) Pass Rate</span>
+                  <strong className="text-blue-600">89.6%</strong>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '89.6%' }}></div>
+                </div>
+                <div className="flex justify-between text-xs font-semibold pt-2">
+                  <span>Final Year (BE-CSE) Pass Rate</span>
+                  <strong className="text-purple-600">96.0%</strong>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-purple-500 h-2 rounded-full" style={{ width: '96.0%' }}></div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 space-y-4">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Daily Attendance Compliance Index</h3>
+              <p className="text-xs text-slate-500">Department attendance metrics tracked against AICTE 75% threshold</p>
+              <div className="space-y-3 pt-2">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span>Second Year (SY-CSE) Compliance</span>
+                  <strong className="text-emerald-600">89.7%</strong>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '89.7%' }}></div>
+                </div>
+                <div className="flex justify-between text-xs font-semibold pt-2">
+                  <span>Third Year (TY-CSE) Compliance</span>
+                  <strong className="text-blue-600">86.4%</strong>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '86.4%' }}></div>
+                </div>
+                <div className="flex justify-between text-xs font-semibold pt-2">
+                  <span>Final Year (BE-CSE) Compliance</span>
+                  <strong className="text-purple-600">91.2%</strong>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-purple-500 h-2 rounded-full" style={{ width: '91.2%' }}></div>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       )}
 

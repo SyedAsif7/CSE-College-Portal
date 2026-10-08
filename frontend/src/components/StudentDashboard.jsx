@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import AssignmentUpload from './student/AssignmentUpload';
 import AssignmentList from './student/AssignmentList';
+import NoticeBoard from './common/NoticeBoard';
 
 const StudentDashboard = ({ user, onLogout }) => {
   const [activeNav, setActiveNav] = useState('overview');
@@ -940,32 +941,9 @@ const StudentDashboard = ({ user, onLogout }) => {
 
       {/* 8. DEPARTMENT NOTICES VIEW */}
       {activeNav === 'notices' && (
-        <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 animate-in fade-in duration-150 space-y-6">
-          <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Department Official Notices & Circulars</h3>
-            <p className="text-xs text-slate-500">Bulletins published by HOD Office and Class Teachers</p>
-          </div>
-
-          <div className="space-y-4">
-            {studentNotices.map((n) => (
-              <div key={n.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-sm text-slate-900 dark:text-white">{n.title}</span>
-                    {n.urgent && (
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">Urgent</span>
-                    )}
-                  </div>
-                  <span className="text-xs text-slate-400">{n.date}</span>
-                </div>
-                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{n.content}</p>
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60 text-xs text-slate-500">
-                  Issued by: <strong>{n.author}</strong>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <div className="animate-in fade-in duration-150">
+          <NoticeBoard user={user} role="student" />
+        </div>
       )}
 
       {/* 9. ACADEMIC DOWNLOADS VIEW */}

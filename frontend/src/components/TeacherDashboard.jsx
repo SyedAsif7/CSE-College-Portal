@@ -22,6 +22,8 @@ import {
 import AssignmentReview from './teacher/AssignmentReview';
 import TimetableView from './teacher/TimetableView';
 import FacultyLeaveManagement from './teacher/FacultyLeaveManagement';
+import AttendanceManager from './common/AttendanceManager';
+import NoticeBoard from './common/NoticeBoard';
 
 // Mock datasets for offline reliability & fast responsiveness
 const MOCK_STUDENTS = [
@@ -370,6 +372,7 @@ const TeacherDashboard = ({ user, onLogout }) => {
     {
       title: 'COLLABORATION',
       items: [
+        { id: 'notices', label: 'Notice Board & Circulars', icon: Bell, badge: 'Official' },
         { id: 'leaves', label: 'Faculty Leaves & CL', icon: CalendarDays, badge: 'CL Quota' },
         { id: 'swap', label: 'Lecture Swap', icon: ArrowLeftRight, badge: swapRequests.length },
         { id: 'faculty', label: 'Faculty Directory', icon: School, badge: MOCK_FACULTY.length },
@@ -823,73 +826,11 @@ const TeacherDashboard = ({ user, onLogout }) => {
         </div>
       )}
 
-      {/* 4. ATTENDANCE REGISTER */}
+      {/* 4. DAILY ATTENDANCE (YEAR-WISE: SY / TY / BE) */}
       {activeNav === 'attendance' && (
-        <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl p-6 space-y-6 animate-in fade-in duration-150">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Daily Attendance Marker & Register</h3>
-              <p className="text-xs text-slate-500">Record classroom roll call for Semester III • Class: SY-CSE</p>
-            </div>
-            <Button 
-              onClick={openAttendanceModal}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1.5" /> Mark Today's Attendance
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
-              <div className="text-2xl font-black text-emerald-700">{attendanceRecords.present}</div>
-              <div className="text-[10px] font-bold uppercase text-emerald-600">Total Present</div>
-            </div>
-            <div className="p-4 rounded-xl bg-rose-50 border border-rose-100 text-center">
-              <div className="text-2xl font-black text-rose-700">{attendanceRecords.absent}</div>
-              <div className="text-[10px] font-bold uppercase text-rose-600">Total Absent</div>
-            </div>
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-center">
-              <div className="text-2xl font-black text-amber-700">{attendanceRecords.late}</div>
-              <div className="text-[10px] font-bold uppercase text-amber-600">Total Late</div>
-            </div>
-            <div className="p-4 rounded-xl bg-sky-50 border border-sky-100 text-center">
-              <div className="text-2xl font-black text-sky-700">{attendanceRecords.rate}%</div>
-              <div className="text-[10px] font-bold uppercase text-sky-600">Compliance Rate</div>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 uppercase text-[10px] font-black text-slate-400">
-                <tr>
-                  <th className="p-3 rounded-l-xl">Student Name</th>
-                  <th className="p-3">PRN / Roll Number</th>
-                  <th className="p-3">Class</th>
-                  <th className="p-3">Email Address</th>
-                  <th className="p-3 rounded-r-xl text-right">Attendance %</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {students.map((student) => (
-                  <tr key={student.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
-                    <td className="p-3 font-bold text-slate-900 dark:text-white flex items-center space-x-2.5">
-                      <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs">
-                        {student.name[0]}
-                      </div>
-                      <span>{student.name}</span>
-                    </td>
-                    <td className="p-3 font-mono font-semibold text-slate-600 dark:text-slate-300">{student.roll_number}</td>
-                    <td className="p-3">{student.class_name}</td>
-                    <td className="p-3 text-slate-500">{student.email}</td>
-                    <td className="p-3 text-right font-black text-emerald-600">
-                      {student.attendance || '88.5%'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        <div className="animate-in fade-in duration-150">
+          <AttendanceManager user={user} role="teacher" />
+        </div>
       )}
 
       {/* 5. ASSIGNMENTS VIEW */}
@@ -1305,6 +1246,13 @@ const TeacherDashboard = ({ user, onLogout }) => {
       {/* 14. FACULTY LEAVE & CL MANAGEMENT VIEW */}
       {activeNav === 'leaves' && (
         <FacultyLeaveManagement user={user} colleagues={MOCK_FACULTY} />
+      )}
+
+      {/* 15. OFFICIAL NOTICE BOARD & CIRCULARS VIEW */}
+      {activeNav === 'notices' && (
+        <div className="animate-in fade-in duration-150">
+          <NoticeBoard user={user} role="teacher" />
+        </div>
       )}
 
       {/* MODALS */}
